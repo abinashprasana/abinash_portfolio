@@ -1,0 +1,14 @@
+{
+    "name": "abinash-portfolio",
+    "version": "1.0.0",
+    "description": "Portfolio setup for Abinash Prasana Selvanathan",
+    "scripts": {
+        "start": "npx serve ."
+    },
+    "keywords": [],
+    "author": "Abinash Prasana Selvanathan",
+    "license": "ISC",
+    "devDependencies": {
+        "serve": "^14.2.0"
+    }
+}
