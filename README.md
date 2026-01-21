@@ -7,7 +7,7 @@ This is the personal portfolio website for Abinash Prasana Selvanathan, built wi
 **The Easiest Way (No installation needed):**
 
 1.  Open the folder containing these files on your computer.
-2.  Double-click **`index.html`**.
+2.  Double-click **`main.html`**.
 3.  It will open in your default web browser (Chrome, Edge, etc.) and works perfectly!
 
 **(Optional) For Developers:**
@@ -18,7 +18,7 @@ If you have Node.js installed and want a local server:
 
 ## 🛠 Project Structure
 
--   `index.html`: Main entry point.
+-   `main.html`: Main entry point.
 -   `css/style.css`: All styling (responsive, dark mode support).
 -   `js/data.js`: Project data and configuration.
 -   `js/main.js`: Core logic for rendering and interactivity.
