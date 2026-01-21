@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Professional AI/ML portfolio\n\n- Responsive portfolio showcasing ML, NLP, and data science projects\n- Interactive project and certification carousels\n- Dark/light theme toggle with smooth transitions\n- Full accessibility support \\(WCAG 2.1 AA\\)\n- Performance optimized with hardware acceleration\n- Mobile-first design with safe area support\n- Features 5 technical projects and 5 professional certifications\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh --version:*)"
     ]
   }
 }
