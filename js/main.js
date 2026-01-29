@@ -1231,6 +1231,7 @@
 
     // Close modal on Escape key
     document.addEventListener('keydown', (e) => {
+    
         if (e.key === 'Escape') {
             window.closeCertModal();
         }
