@@ -1433,107 +1433,42 @@ ul {
     transform: scale(1.1);
 }
 
-/* ----- Skills Table ----- */
+/* ----- Skills ----- */
 .skills-grid {
-    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.skills-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 6px;
-}
-
-.skills-table-row {
+.skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 500;
     transition: all 0.2s var(--ease);
 }
 
-.skills-table-row:hover {
-    background: rgba(139, 92, 246, 0.06);
+.skill-chip:hover {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
-.skills-table-icon {
-    width: 48px;
-    padding: 12px 12px 12px 16px;
-    vertical-align: middle;
-}
-
-.skills-table-name {
-    padding: 12px 24px 12px 8px;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    vertical-align: middle;
-}
-
-.skills-table-icon .skill-icon {
-    width: 24px;
-    height: 24px;
+.skill-icon {
+    width: 18px;
+    height: 18px;
     color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.skills-table-icon .skill-icon svg {
+.skill-icon svg {
     width: 100%;
     height: 100%;
-}
-
-/* Add subtle separator between the two skill columns */
-.skills-table-row td:nth-child(3) {
-    border-left: 1px solid var(--border);
-    padding-left: 24px;
-}
-
-@media (max-width: 600px) {
-    /* Stack to 1 skill per row on small screens */
-    .skills-table-row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .skills-table-row td:nth-child(3),
-    .skills-table-row td:nth-child(4) {
-        border-left: none;
-        padding-left: 16px;
-    }
-
-    .skills-table {
-        display: block;
-    }
-
-    .skills-table tbody {
-        display: block;
-    }
-
-    .skills-table-row {
-        display: flex;
-        flex-wrap: wrap;
-        border-bottom: 1px solid var(--border);
-        padding: 4px 0;
-    }
-
-    .skills-table-icon {
-        width: 40px;
-        padding: 8px 8px 8px 12px;
-    }
-
-    .skills-table-name {
-        padding: 8px 12px 8px 4px;
-        flex: 1;
-    }
-
-    /* Each pair takes full width on mobile */
-    .skills-table-row td:nth-child(1),
-    .skills-table-row td:nth-child(2) {
-        width: auto;
-    }
-
-    .skills-table-row td:nth-child(3),
-    .skills-table-row td:nth-child(4) {
-        width: auto;
-    }
 }
 
 /* ----- Contact ----- */
