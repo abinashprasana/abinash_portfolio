@@ -896,7 +896,7 @@
     }
 
     /**
-     * Render skill chips dynamically
+     * Render skills as a table with icon and name columns
      * @param {Array} skills - Array of skill objects
      */
     function renderSkills(skills) {
@@ -904,16 +904,28 @@
         if (!grid || !skills) return;
 
         try {
-            grid.innerHTML = skills.map((s, i) => `
-                <span class="skill-chip reveal" style="transition-delay: ${i * 30}ms" role="listitem">
-                    <span class="skill-icon" aria-hidden="true">${s.icon}</span>
-                    <span>${escapeHtml(s.name)}</span>
-                </span>
-            `).join('');
+            // Build table rows, 2 skills per row on desktop
+            let tableHTML = '<table class="skills-table" role="table"><tbody>';
+            for (let i = 0; i < skills.length; i += 2) {
+                tableHTML += '<tr class="skills-table-row reveal" style="transition-delay: ' + (i * 30) + 'ms">';
+                // First skill in row
+                tableHTML += '<td class="skills-table-icon"><span class="skill-icon" aria-hidden="true">' + skills[i].icon + '</span></td>';
+                tableHTML += '<td class="skills-table-name">' + escapeHtml(skills[i].name) + '</td>';
+                // Second skill in row (if exists)
+                if (i + 1 < skills.length) {
+                    tableHTML += '<td class="skills-table-icon"><span class="skill-icon" aria-hidden="true">' + skills[i + 1].icon + '</span></td>';
+                    tableHTML += '<td class="skills-table-name">' + escapeHtml(skills[i + 1].name) + '</td>';
+                } else {
+                    tableHTML += '<td class="skills-table-icon"></td><td class="skills-table-name"></td>';
+                }
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody></table>';
+            grid.innerHTML = tableHTML;
 
             // Reuse existing observer
             const observer = initReveal();
-            $$('.skill-chip.reveal').forEach(el => {
+            $$('.skills-table-row.reveal').forEach(el => {
                 if (observer && !el.classList.contains('visible')) {
                     observer.observe(el);
                 }
