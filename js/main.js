@@ -24,10 +24,12 @@
         },
         // Cursor animation
         cursor: {
-            cursorEasing: 0.15,
-            followerEasing: 0.08,
-            cursorOffset: 10,
-            followerOffset: 3
+            cursorEasing: 0.14,     // outer ring lag (slower = more dramatic trail)
+            followerEasing: 0.55,   // inner dot snappy follow
+            cursorOffset: 9,        // half of 18px outer ring
+            followerOffset: 2.5,    // half of 5px dot
+            repelRadius: 130,       // particle repulsion radius in px
+            repelStrength: 0.9      // force multiplier
         },
         // Magnetic effect
         magnetic: {
@@ -46,6 +48,10 @@
     // DOM Cache
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
+
+    // Global mouse — shared between cursor and particle repulsion
+    let _mouseX = 0, _mouseY = 0;
+    document.addEventListener('mousemove', e => { _mouseX = e.clientX; _mouseY = e.clientY; }, { passive: true });
 
     /**
      * Utility: Throttle function execution
@@ -89,6 +95,7 @@
             return;
         }
 
+        initIntro();
         initTheme();
         initCursor();
         initScrollProgress();
@@ -107,29 +114,103 @@
         renderSkills(window.PORTFOLIO_DATA.skills);
         initProjectsCarousel();
         initCertCarousel();
+        initFloatingBadges();
 
         $('#year').textContent = new Date().getFullYear();
     });
 
     /**
-     * Initialize theme toggle functionality
-     * Handles dark/light mode switching with localStorage persistence
+     * Inject floating tech-badge decorations around the hero profile card.
+     * Each badge is positioned with CSS custom-properties that the stylesheet
+     * reads for placement and stagger timing.
+     */
+    function initFloatingBadges() {
+        const heroCard = $('.hero-card');
+        if (!heroCard) return;
+
+        const badges = [
+            { label: 'Python',        icon: '🐍', pos: 'tl', delay: 0   },
+            { label: 'TensorFlow',    icon: '🧠', pos: 'tr', delay: 0.6 },
+            { label: 'NLP',           icon: '💬', pos: 'ml', delay: 1.1 },
+            { label: 'RAG + LLMs',    icon: '🔗', pos: 'mr', delay: 0.3 },
+            { label: 'Data Science',  icon: '📊', pos: 'bl', delay: 0.8 },
+            { label: 'Scikit-learn',  icon: '⚙️', pos: 'br', delay: 1.4 },
+        ];
+
+        const wrap = document.createElement('div');
+        wrap.className = 'hero-badge-ring';
+        wrap.setAttribute('aria-hidden', 'true');
+
+        badges.forEach(b => {
+            const el = document.createElement('span');
+            el.className = `hero-badge hero-badge--${b.pos}`;
+            el.style.animationDelay = `${b.delay}s`;
+            el.innerHTML = `<span class="hero-badge-icon">${b.icon}</span><span class="hero-badge-label">${escapeHtml(b.label)}</span>`;
+            wrap.appendChild(el);
+        });
+
+        heroCard.appendChild(wrap);
+    }
+
+    /**
+     * Intro splash — locks scroll, waits for animations, then slides out
+     */
+    function initIntro() {
+        const intro = $('#intro');
+        if (!intro) return;
+
+        // Lock scroll while intro is visible
+        document.body.style.overflow = 'hidden';
+
+        // Reduced motion users skip straight to content
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            intro.remove();
+            document.body.style.overflow = '';
+            return;
+        }
+
+        // Wait for the bar fill (2.0s delay 0.3s = 2.3s) then exit
+        setTimeout(() => {
+            intro.classList.add('exit');
+            intro.addEventListener('animationend', () => {
+                intro.remove();
+                document.body.style.overflow = '';
+            }, { once: true });
+        }, 2400);
+    }
+
+    /**
+     * Initialize theme toggle — cycles: dark → cream → light → dark
      */
     function initTheme() {
         const btn = $('#themeBtn');
         if (!btn) return;
 
+        const themes = ['dark', 'cream', 'light'];
+        const labels = { dark: 'Switch to cream editorial theme', cream: 'Switch to light theme', light: 'Switch to dark theme' };
+
         try {
             const saved = localStorage.getItem('theme');
-            if (saved) document.documentElement.dataset.theme = saved;
+            if (saved && themes.includes(saved)) {
+                document.documentElement.dataset.theme = saved;
+            }
         } catch (error) {
             console.warn('localStorage not available:', error);
         }
 
+        function updateAriaLabel() {
+            const current = document.documentElement.dataset.theme || 'dark';
+            btn.setAttribute('aria-label', labels[current] || 'Toggle theme');
+        }
+
+        updateAriaLabel();
+
         btn.addEventListener('click', () => {
-            const current = document.documentElement.dataset.theme;
-            const next = current === 'light' ? 'dark' : 'light';
+            const current = document.documentElement.dataset.theme || 'dark';
+            const idx = themes.indexOf(current);
+            const next = themes[(idx + 1) % themes.length];
             document.documentElement.dataset.theme = next;
+            updateAriaLabel();
 
             try {
                 localStorage.setItem('theme', next);
@@ -140,42 +221,178 @@
     }
 
     /**
-     * Initialize custom cursor animation
-     * Creates smooth following cursor with hover effects (desktop only)
+     * Initialize custom cursor — slow spring, velocity stretch, water trail, magic sparks
      */
     function initCursor() {
-        const cursor = $('.cursor');
+        const cursor   = $('.cursor');
         const follower = $('.cursor-follower');
+        const trails   = [...$$('.cursor-trail')];
         if (!cursor || !follower || isMobile()) return;
 
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-        let followerX = 0, followerY = 0;
+        // Spring state — outer ring (slow, liquid)
+        let cx = _mouseX, cy = _mouseY, cvx = 0, cvy = 0;
+        // Spring state — inner dot (faster, precise)
+        let fx = _mouseX, fy = _mouseY, fvx = 0, fvy = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        // Circular position history for trail drops
+        const HIST = 26;
+        const hx = new Float32Array(HIST).fill(_mouseX);
+        const hy = new Float32Array(HIST).fill(_mouseY);
+        let head = 0;
+
+        // Trail: [history-lag frames, size-px, opacity]
+        const TRAIL_CFG = [
+            [3,  4.5, 0.52],
+            [6,  4.0, 0.36],
+            [10, 3.5, 0.24],
+            [15, 2.5, 0.14],
+            [21, 2.0, 0.07],
+        ];
+        trails.forEach((el, i) => {
+            const c = TRAIL_CFG[i];
+            if (!c) return;
+            el.style.width  = `${c[1]}px`;
+            el.style.height = `${c[1]}px`;
         });
 
+        // Sparkle state
+        let lastSparkleMs = 0;
+        let prevSparkleX = _mouseX, prevSparkleY = _mouseY;
+
+        // Sparkle color palette — accent, cyan, amber, white flash
+        const SPARK_COLORS = ['var(--accent)', 'var(--accent)', 'var(--accent-2)', 'var(--amber)', '#ffffff'];
+        // Sparkle shapes — circle, rounded-square (rotates into diamond), tiny sliver
+        const SPARK_SHAPES = ['50%', '50%', '50%', '3px', '3px', '50% 20%'];
+
+        function spawnSparkles(x, y, speed) {
+            const count = speed > 20 ? 5 : speed > 13 ? 4 : speed > 7 ? 3 : 2;
+            for (let n = 0; n < count; n++) {
+                const el = document.createElement('div');
+                el.className = 'cursor-sparkle';
+                const size  = 2.5 + Math.random() * 5.5;               // 2.5–8 px
+                const angle = Math.random() * Math.PI * 2;
+                const dist  = 14 + Math.random() * 36;                  // 14–50 px burst radius
+                const dur   = 300 + Math.random() * 380;                // 300–680 ms
+                const rot   = (Math.random() > 0.5 ? 1 : -1) * (90 + Math.random() * 270);
+                const color = SPARK_COLORS[Math.floor(Math.random() * SPARK_COLORS.length)];
+                const shape = SPARK_SHAPES[Math.floor(Math.random() * SPARK_SHAPES.length)];
+                const glow1 = (size * 3.5).toFixed(0);
+                const glow2 = (size * 7).toFixed(0);
+                el.style.cssText =
+                    `left:${x}px;top:${y}px;` +
+                    `width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;` +
+                    `background:${color};border-radius:${shape};` +
+                    `box-shadow:0 0 ${glow1}px ${color},0 0 ${glow2}px ${color},0 0 ${(size * 12).toFixed(0)}px rgba(139,92,246,0.12);` +
+                    `--dx:${(Math.cos(angle) * dist).toFixed(1)}px;` +
+                    `--dy:${(Math.sin(angle) * dist).toFixed(1)}px;` +
+                    `--dur:${dur.toFixed(0)}ms;` +
+                    `--rot:${rot.toFixed(0)}deg;`;
+                document.body.appendChild(el);
+                el.addEventListener('animationend', () => el.remove(), { once: true });
+            }
+        }
+
+        let isHovering = false;
+
         function animate() {
-            const { cursorEasing, followerEasing, cursorOffset, followerOffset } = CONFIG.cursor;
+            const { cursorOffset, followerOffset } = CONFIG.cursor;
 
-            cursorX += (mouseX - cursorX) * cursorEasing;
-            cursorY += (mouseY - cursorY) * cursorEasing;
-            cursor.style.transform = `translate(${cursorX - cursorOffset}px, ${cursorY - cursorOffset}px)`;
+            // — Ring: very slow viscous spring — honey-thick drag
+            cvx += (_mouseX - cx) * 0.042;
+            cvy += (_mouseY - cy) * 0.042;
+            cvx *= 0.87;
+            cvy *= 0.87;
+            cx  += cvx;
+            cy  += cvy;
 
-            followerX += (mouseX - followerX) * followerEasing;
-            followerY += (mouseY - followerY) * followerEasing;
-            follower.style.transform = `translate(${followerX - followerOffset}px, ${followerY - followerOffset}px)`;
+            // — Dot: snappier but still slightly behind
+            fvx += (_mouseX - fx) * 0.18;
+            fvy += (_mouseY - fy) * 0.18;
+            fvx *= 0.79;
+            fvy *= 0.79;
+            fx  += fvx;
+            fy  += fvy;
+
+            // — Velocity stretch: elongates like a water droplet in motion
+            const speed   = Math.sqrt(cvx * cvx + cvy * cvy);
+            const stretch = Math.min(1 + speed * 0.052, 1.6);
+            const squeeze = 1 / Math.sqrt(stretch);
+            const angle   = Math.atan2(cvy, cvx) * (180 / Math.PI);
+
+            cursor.style.transform =
+                `translate(${cx - cursorOffset}px,${cy - cursorOffset}px) ` +
+                `rotate(${angle.toFixed(2)}deg) scale(${stretch.toFixed(3)},${squeeze.toFixed(3)})`;
+
+            follower.style.transform =
+                `translate(${fx - followerOffset}px,${fy - followerOffset}px)`;
+
+            // — Write ring position to circular buffer
+            hx[head] = cx;
+            hy[head] = cy;
+            head = (head + 1) % HIST;
+
+            // — Position trail drops from history
+            trails.forEach((el, i) => {
+                const c = TRAIL_CFG[i];
+                if (!c) return;
+                if (isHovering) { el.style.opacity = '0'; return; }
+                const idx  = (head - c[0] + HIST) % HIST;
+                const half = c[1] / 2;
+                el.style.transform = `translate(${hx[idx] - half}px,${hy[idx] - half}px)`;
+                el.style.opacity   = String(c[2]);
+            });
 
             requestAnimationFrame(animate);
         }
         animate();
 
-        // Hover effects
-        $$('a, button, .card, .skill-chip').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        // Click — triple ripple burst
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('clicking');
+            [1, 2, 3].forEach((ring, i) => {
+                setTimeout(() => {
+                    const r = document.createElement('div');
+                    r.className = 'cursor-ripple';
+                    r.dataset.ring = String(ring);
+                    r.style.left = `${_mouseX}px`;
+                    r.style.top  = `${_mouseY}px`;
+                    document.body.appendChild(r);
+                    r.addEventListener('animationend', () => r.remove(), { once: true });
+                }, i * 70);
+            });
+        });
+        document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+
+        // Hover states + sparkle throttle on mousemove
+        const interactiveSelector = 'a, button, .card, .skill-chip, .contact-link-card, .cert-view-btn, .carousel-btn, .project-card';
+        document.addEventListener('mousemove', e => {
+            isHovering = !!e.target.closest(interactiveSelector);
+            cursor.classList.toggle('hovering', isHovering);
+            follower.classList.toggle('hovering', isHovering);
+
+            // Spark emission — throttled, speed-gated
+            const now = Date.now();
+            const dx  = e.clientX - prevSparkleX;
+            const dy  = e.clientY - prevSparkleY;
+            const spd = Math.sqrt(dx * dx + dy * dy);
+            prevSparkleX = e.clientX;
+            prevSparkleY = e.clientY;
+
+            if (spd > 3 && now - lastSparkleMs > 32) {
+                lastSparkleMs = now;
+                spawnSparkles(e.clientX, e.clientY, spd);
+            }
+        }, { passive: true });
+
+        // Leave / enter window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity   = '0';
+            follower.style.opacity = '0';
+            trails.forEach(el => { el.style.opacity = '0'; });
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity   = '1';
+            follower.style.opacity = '1';
         });
     }
 
@@ -385,21 +602,32 @@
         observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
         /**
-         * Create particle instances based on screen size
+         * Create particle instances — includes a few larger "star" particles
          */
         function initializeParticles() {
             const count = Math.min(cfg.maxCount, Math.floor((canvas.width * canvas.height) / cfg.density));
             particles = [];
 
             for (let i = 0; i < count; i++) {
+                const isStar = i < Math.floor(count * 0.1); // 10% are star particles
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * cfg.sizeVariation + cfg.baseSize,
-                    speedX: (Math.random() - cfg.baseSpeed) * cfg.speedVariation,
-                    speedY: (Math.random() - cfg.baseSpeed) * cfg.speedVariation,
-                    opacity: Math.random() * cfg.opacityVariation + cfg.baseOpacity
+                    size: isStar
+                        ? Math.random() * 1.5 + 1.5
+                        : Math.random() * cfg.sizeVariation + cfg.baseSize,
+                    speedX: (Math.random() - cfg.baseSpeed) * cfg.speedVariation * (isStar ? 0.5 : 1),
+                    speedY: (Math.random() - cfg.baseSpeed) * cfg.speedVariation * (isStar ? 0.5 : 1),
+                    opacity: isStar
+                        ? Math.random() * 0.25 + 0.2
+                        : Math.random() * cfg.opacityVariation + cfg.baseOpacity,
+                    isStar,
+                    // original speed — used to restore after repulsion
+                    baseSpeedX: 0,
+                    baseSpeedY: 0
                 });
+                particles[i].baseSpeedX = particles[i].speedX;
+                particles[i].baseSpeedY = particles[i].speedY;
             }
         }
 
@@ -426,66 +654,108 @@
         }
 
         /**
-         * Main animation loop
+         * Main animation loop — with mouse repulsion and gradient connectors
          */
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Update and draw particles
+            const repelR  = CONFIG.cursor.repelRadius;
+            const repelRSq = repelR * repelR;
+            const repelStr = CONFIG.cursor.repelStrength;
+
+            // Update positions + apply mouse repulsion
             particles.forEach(p => {
-                // Update position
+                // Drift toward base speed (spring back after repulsion)
+                p.speedX += (p.baseSpeedX - p.speedX) * 0.05;
+                p.speedY += (p.baseSpeedY - p.speedY) * 0.05;
+
+                // Mouse repulsion
+                if (_mouseX > 0 || _mouseY > 0) {
+                    const rdx = p.x - _mouseX;
+                    const rdy = p.y - _mouseY;
+                    const rdSq = rdx * rdx + rdy * rdy;
+                    if (rdSq < repelRSq && rdSq > 0.01) {
+                        const rd = Math.sqrt(rdSq);
+                        const force = ((repelR - rd) / repelR) * repelStr;
+                        p.speedX += (rdx / rd) * force;
+                        p.speedY += (rdy / rd) * force;
+                    }
+                }
+
                 p.x += p.speedX;
                 p.y += p.speedY;
 
-                // Wrap around screen edges
+                // Wrap edges
                 if (p.x < 0) p.x = canvas.width;
                 if (p.x > canvas.width) p.x = 0;
                 if (p.y < 0) p.y = canvas.height;
                 if (p.y > canvas.height) p.y = 0;
 
-                // Draw particle
-                ctx.fillStyle = `rgba(${accentRgb}, ${p.opacity})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
+                // Draw — stars get a subtle glow
+                if (p.isStar) {
+                    ctx.save();
+                    ctx.shadowColor = `rgba(${accentRgb}, 0.6)`;
+                    ctx.shadowBlur = 6;
+                    ctx.fillStyle = `rgba(${accentRgb}, ${p.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                } else {
+                    ctx.fillStyle = `rgba(${accentRgb}, ${p.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             });
 
-            // Build spatial grid for efficient neighbor search
+            // Build spatial grid
             const { grid, cols, cellSize } = buildSpatialGrid();
 
-            // Connect nearby particles using spatial partitioning
+            // Gradient connector lines
             particles.forEach((p, i) => {
                 const col = Math.floor(p.x / cellSize);
                 const row = Math.floor(p.y / cellSize);
 
-                // Check only neighboring cells
                 for (let dy = -1; dy <= 1; dy++) {
                     for (let dx = -1; dx <= 1; dx++) {
-                        const neighborCol = col + dx;
-                        const neighborRow = row + dy;
-                        const cell = neighborRow * cols + neighborCol;
+                        const cell = (row + dy) * cols + (col + dx);
+                        if (cell < 0 || cell >= grid.length) continue;
 
-                        if (cell >= 0 && cell < grid.length) {
-                            grid[cell].forEach(j => {
-                                if (i < j) { // Avoid duplicate connections
-                                    const dx = p.x - particles[j].x;
-                                    const dy = p.y - particles[j].y;
-                                    const distSq = dx * dx + dy * dy;
-                                    const maxDistSq = cfg.connectionDistance * cfg.connectionDistance;
+                        grid[cell].forEach(j => {
+                            if (i >= j) return;
+                            const ex = p.x - particles[j].x;
+                            const ey = p.y - particles[j].y;
+                            const distSq = ex * ex + ey * ey;
+                            const maxDistSq = cfg.connectionDistance * cfg.connectionDistance;
+                            if (distSq >= maxDistSq) return;
 
-                                    if (distSq < maxDistSq) {
-                                        const dist = Math.sqrt(distSq);
-                                        const opacity = 0.1 * (1 - dist / cfg.connectionDistance);
-                                        ctx.strokeStyle = `rgba(${accent2Rgb}, ${opacity})`;
-                                        ctx.lineWidth = 0.5;
-                                        ctx.beginPath();
-                                        ctx.moveTo(p.x, p.y);
-                                        ctx.lineTo(particles[j].x, particles[j].y);
-                                        ctx.stroke();
-                                    }
-                                }
-                            });
-                        }
+                            const dist = Math.sqrt(distSq);
+                            const proximity = 1 - dist / cfg.connectionDistance;
+
+                            // Boost opacity when either endpoint is near mouse
+                            let mouseBoost = 1;
+                            const mpx = (p.x + particles[j].x) / 2 - _mouseX;
+                            const mpy = (p.y + particles[j].y) / 2 - _mouseY;
+                            const mouseDist = Math.sqrt(mpx * mpx + mpy * mpy);
+                            if (mouseDist < repelR * 1.5) {
+                                mouseBoost = 1 + (1 - mouseDist / (repelR * 1.5)) * 2.5;
+                            }
+
+                            const baseOpacity = 0.12 * proximity * mouseBoost;
+
+                            // Gradient line: accent → accent-2
+                            const grad = ctx.createLinearGradient(p.x, p.y, particles[j].x, particles[j].y);
+                            grad.addColorStop(0, `rgba(${accentRgb},  ${baseOpacity})`);
+                            grad.addColorStop(1, `rgba(${accent2Rgb}, ${baseOpacity * 0.7})`);
+
+                            ctx.strokeStyle = grad;
+                            ctx.lineWidth = proximity * 1.2;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        });
                     }
                 }
             });
@@ -530,15 +800,24 @@
             return initReveal.observer;
         }
 
+        // Stagger delays — each .reveal in a section gets 70ms increments
+        $$('section').forEach(section => {
+            const revealEls = section.querySelectorAll('.reveal');
+            revealEls.forEach((el, i) => {
+                if (!el.style.transitionDelay) {
+                    el.style.transitionDelay = `${i * 70}ms`;
+                }
+            });
+        });
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    // Optionally unobserve after revealing to improve performance
-                    // observer.unobserve(entry.target);
+                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
         $$('.reveal').forEach(el => observer.observe(el));
 
@@ -624,24 +903,38 @@
         const stats = $$('.stat-value[data-count]');
         if (!stats.length) return;
 
+        const animated = new WeakSet();
+
+        function runCount(el) {
+            if (animated.has(el)) return;
+            animated.add(el);
+            const target = parseInt(el.dataset.count, 10);
+            if (isNaN(target)) {
+                console.warn('Invalid count value:', el.dataset.count);
+                return;
+            }
+            animateCount(el, target);
+        }
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const target = parseInt(el.dataset.count, 10);
-
-                    if (isNaN(target)) {
-                        console.warn('Invalid count value:', el.dataset.count);
-                        return;
-                    }
-
-                    animateCount(el, target);
-                    observer.unobserve(el);
+                    runCount(entry.target);
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.5 });
 
-        stats.forEach(stat => observer.observe(stat));
+        stats.forEach(stat => {
+            // If already visible on page load, animate immediately
+            const rect = stat.getBoundingClientRect();
+            const inView = rect.top < window.innerHeight && rect.bottom > 0;
+            if (inView) {
+                runCount(stat);
+            } else {
+                observer.observe(stat);
+            }
+        });
     }
 
     /**
@@ -896,24 +1189,68 @@
     }
 
     /**
-     * Render skill chips dynamically
-     * @param {Array} skills - Array of skill objects
+     * Render skill chips grouped by category
+     * @param {Array} skills - Array of skill objects with optional .category field
      */
     function renderSkills(skills) {
         const grid = $('#skillsGrid');
         if (!grid || !skills) return;
 
+        // Category accent colors  (CSS variable names for easy theming)
+        const categoryMeta = {
+            'Languages & Core':  { color: 'var(--accent)',   short: 'LANG' },
+            'ML & AI':           { color: '#f59e0b',         short: 'ML'   },
+            'Data & Analytics':  { color: 'var(--accent-3)', short: 'DATA' },
+            'Tools & Workflow':  { color: 'var(--accent-2)', short: 'TOOLS'},
+        };
+
         try {
-            grid.innerHTML = skills.map((s, i) => `
-                <span class="skill-chip reveal" style="transition-delay: ${i * 30}ms" role="listitem">
-                    <span class="skill-icon" aria-hidden="true">${s.icon}</span>
-                    <span>${escapeHtml(s.name)}</span>
-                </span>
-            `).join('');
+            // Group skills by category
+            const hasCats = skills.some(s => s.category);
+
+            if (!hasCats) {
+                // Fallback: flat render (original behaviour)
+                grid.innerHTML = skills.map((s, i) => `
+                    <span class="skill-chip reveal" style="transition-delay: ${i * 30}ms" role="listitem">
+                        <span class="skill-icon" aria-hidden="true">${s.icon}</span>
+                        <span>${escapeHtml(s.name)}</span>
+                    </span>
+                `).join('');
+            } else {
+                // Group by category
+                const groups = {};
+                skills.forEach(s => {
+                    const cat = s.category || 'Other';
+                    if (!groups[cat]) groups[cat] = [];
+                    groups[cat].push(s);
+                });
+
+                let chipIndex = 0;
+                grid.innerHTML = Object.entries(groups).map(([cat, items]) => {
+                    const meta = categoryMeta[cat] || { color: 'var(--accent)', short: '—' };
+                    const chips = items.map(s => {
+                        const delay = chipIndex++ * 40;
+                        return `
+                        <span class="skill-chip reveal" style="transition-delay:${delay}ms;--chip-color:${meta.color}" role="listitem">
+                            <span class="skill-icon" aria-hidden="true">${s.icon}</span>
+                            <span>${escapeHtml(s.name)}</span>
+                        </span>`;
+                    }).join('');
+
+                    return `
+                    <div class="skill-category reveal" role="group" aria-label="${escapeHtml(cat)}">
+                        <div class="skill-category-label" style="--cat-color:${meta.color}">
+                            <span class="skill-cat-dot"></span>
+                            <span>${escapeHtml(cat)}</span>
+                        </div>
+                        <div class="skills-chip-row">${chips}</div>
+                    </div>`;
+                }).join('');
+            }
 
             // Reuse existing observer
             const observer = initReveal();
-            $$('.skill-chip.reveal').forEach(el => {
+            $$('#skillsGrid .reveal').forEach(el => {
                 if (observer && !el.classList.contains('visible')) {
                     observer.observe(el);
                 }
@@ -1137,9 +1474,21 @@
         dotsContainer.addEventListener('mouseenter', stopAutoRotate);
         dotsContainer.addEventListener('mouseleave', startAutoRotate);
 
-        // Keyboard navigation for accessibility
+        // Track whether the certifications section is visible
+        let isCertSectionVisible = false;
+        const certSection = $('#certifications');
+        if (certSection) {
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    isCertSectionVisible = entry.isIntersecting;
+                });
+            }, { threshold: 0.1 });
+            sectionObserver.observe(certSection);
+        }
+
+        // Keyboard navigation — only active when cert section is in view and modal is closed
         document.addEventListener('keydown', (e) => {
-            // Only handle if modal is not open
+            if (!isCertSectionVisible) return;
             const modal = $('#certModal');
             if (modal && modal.classList.contains('active')) return;
 
@@ -1167,31 +1516,28 @@
             title: 'JPMorgan Chase & Co. Software Engineering Job Simulation',
             issuer: 'Forage • January 2026',
             image: 'assets/jpmorgan-cert.png',
+            verifyUrl: 'https://www.theforage.com/completion-certificates/Sj7temL583QAYpHXD/E6McHJDKsQYh79moz_Sj7temL583QAYpHXD_696807b3afb60a1158b52c05_1768583777280_completion_certificate.pdf',
             description: 'A virtual job simulation developed by JPMorgan Chase that gives hands-on software engineering experience by working with real-world technologies used in industry. Through this simulation, I completed practical tasks involving backend development with tools like Spring Boot, Kafka integration, REST APIs, and database interaction, which strengthened my understanding of building scalable services and enterprise software practices.'
         },
         {
             title: 'IBM Data Science Professional Certificate (V3)',
             issuer: 'Coursera • November 2025',
             image: 'assets/ibm-data-science-cert.png',
+            verifyUrl: 'https://www.credly.com/badges/babf18dc-fa2a-4ab4-ad3e-e728752e5098/linked_in_profile',
             description: 'An online professional certificate from IBM that covers core data science and machine learning skills used in real industry roles. The program includes training in Python programming, databases and SQL, data visualization, exploratory data analysis, and machine learning, and it culminates in hands-on projects that showcase applied data science techniques and tools.'
         },
         {
-            title: 'IBM Python for Data Science and AI',
-            issuer: 'Coursera • August 2025',
-            image: 'assets/python-data-science-ai-cert.png',
-            description: 'A foundational certificate proving applied Python skills for data analysis, manipulation, and basic AI tasks using libraries like Pandas and NumPy, taught through practical examples and interactive notebooks.'
+            title: 'AWS Cloud Practitioner Essentials',
+            issuer: 'AWS Training & Certification • May 2026',
+            image: 'assets/aws-cloud-practitioner-cert.png',
+            description: 'A completion certificate from AWS Training and Certification covering foundational cloud computing concepts and core AWS services. The course covers essential areas including cloud architecture, security and compliance, pricing models, storage, compute, and networking on the AWS platform, providing a solid grounding in how modern cloud infrastructure is designed and operated.'
         },
         {
-            title: 'IBM Databases and SQL for Data Science',
-            issuer: 'Coursera • August 2025',
-            image: 'assets/databases-sql-cert.png',
-            description: 'A course certification demonstrating the ability to create, query, and analyze relational data using SQL in Python environments, including constructing advanced queries and working with multiple tables.'
-        },
-        {
-            title: 'IBM Machine Learning with Python (V2)',
-            issuer: 'Coursera • October 2025',
-            image: 'assets/machine-learning-python-cert.png',
-            description: 'A certificate showing completion of practical machine learning training using Python and scikit-learn, covering supervised and unsupervised algorithms, model evaluation, and real-world dataset experimentation.'
+            title: 'Claude Code in Action',
+            issuer: 'Anthropic • March 2026',
+            image: 'assets/claude-code-cert.png',
+            verifyUrl: 'https://verify.skilljar.com/c/ng4mrdhdsa4b',
+            description: 'A certificate of completion from Anthropic for the Claude Code in Action course, which provides hands-on training in using Claude Code as an AI-powered development tool. The course covers practical workflows for building, debugging, and iterating on real software projects using Claude as an intelligent coding assistant, reflecting a growing skillset at the intersection of AI and software engineering.'
         }
     ];
 
@@ -1208,10 +1554,11 @@
         const cert = CERT_DATA[certIndex];
 
         modalBody.innerHTML = `
-            ${cert.image ? `<img src="${escapeHtml(cert.image)}" alt="${escapeHtml(cert.title)}" loading="lazy">` : ''}
+            ${cert.image ? `<img src="${escapeHtml(cert.image)}" alt="${escapeHtml(cert.title)}" loading="lazy" decoding="async">` : ''}
             <h3>${escapeHtml(cert.title)}</h3>
             <p style="color: var(--accent); font-weight: 500; margin-bottom: 16px;">${escapeHtml(cert.issuer)}</p>
             <p>${escapeHtml(cert.description)}</p>
+            ${cert.verifyUrl ? `<a href="${escapeHtml(cert.verifyUrl)}" target="_blank" rel="noopener noreferrer" class="cert-verify-link">Verify Certificate ↗</a>` : ''}
         `;
 
         modal.classList.add('active');

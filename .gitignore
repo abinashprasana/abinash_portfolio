@@ -25,7 +25,9 @@ npm-debug.log*
 
 # Temporary files
 *.tmp
+*.bak
 .cache/
+.claude/
 
 # Build outputs (if any)
 dist/
