@@ -1070,14 +1070,11 @@
             const offset = centerPosition - totalOffset;
             carousel.style.transform = `translateX(${offset}px)`;
 
-            // Update buttons
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex >= maxIndex;
-
             // Update dots
             const dots = dotsContainer.querySelectorAll('.carousel-dot');
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === currentIndex);
+                dot.setAttribute('aria-current', i === currentIndex ? 'true' : 'false');
             });
         }
 
@@ -1105,11 +1102,21 @@
         }
 
         prevBtn.addEventListener('click', () => {
-            prevSlide();
+            if (currentIndex > 0) {
+                prevSlide();
+            } else {
+                currentIndex = maxIndex;
+                updateCarousel();
+            }
             stopAutoRotate();
         });
         nextBtn.addEventListener('click', () => {
-            nextSlide();
+            if (currentIndex < maxIndex) {
+                nextSlide();
+            } else {
+                currentIndex = 0;
+                updateCarousel();
+            }
             stopAutoRotate();
         });
 

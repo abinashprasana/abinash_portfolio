@@ -184,23 +184,14 @@ a:focus-visible {
     content: '';
     position: absolute;
     bottom: -4px;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 40px;
     height: 2px;
     background: var(--gradient);
     border-radius: 2px;
 }
 
-/* About Card hover */
-.about-card {
-    transition: all 0.2s var(--ease);
-}
-
-.about-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.18);
-}
 
 .about-card:hover .about-icon {
     color: var(--accent);
@@ -1442,6 +1433,10 @@ ul {
     line-height: 1.75;
 }
 
+.timeline-desc + .timeline-desc {
+    margin-top: 14px;
+}
+
 .timeline-highlights {
     margin: 14px 0 0 0;
     padding: 0;
@@ -1776,8 +1771,8 @@ ul {
 /* ----- Skills ----- */
 .skills-grid {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    gap: 28px;
 }
 
 /* v2: colour fill on hover (accent bg) instead of border-only change */
