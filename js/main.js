@@ -1545,6 +1545,20 @@
             image: 'assets/claude-code-cert.png',
             verifyUrl: 'https://verify.skilljar.com/c/ng4mrdhdsa4b',
             description: 'A certificate of completion from Anthropic for the Claude Code in Action course, which provides hands-on training in using Claude Code as an AI-powered development tool. The course covers practical workflows for building, debugging, and iterating on real software projects using Claude as an intelligent coding assistant, reflecting a growing skillset at the intersection of AI and software engineering.'
+        },
+        {
+            title: 'SAS Programming 1: Essentials',
+            issuer: 'SAS • Badge',
+            image: 'assets/sas-programming-cert.png',
+            verifyUrl: 'https://www.credly.com/badges/bc6d1521-488c-431d-b4ec-1eb6f386e08a/linked_in_profile',
+            description: 'A verified digital badge issued through Credly by SAS, recognising completion of SAS Programming 1: Essentials. The course covers the fundamentals of the SAS programming language for data access, manipulation, and analysis, building practical skills in writing SAS programs, working with SAS data sets, producing formatted reports, and applying basic statistical procedures within the SAS environment.'
+        },
+        {
+            title: 'SQL (Intermediate)',
+            issuer: 'HackerRank • June 2026',
+            image: 'assets/sql-intermediate-cert.png',
+            verifyUrl: 'https://www.hackerrank.com/certificates/iframe/a0a9acf47083',
+            description: 'A skill certification from HackerRank awarded for passing the SQL Intermediate assessment. The test evaluates practical knowledge of relational databases and query writing, covering complex joins, aggregations, subqueries, set operations, and working with multiple tables to extract and analyse structured data. Certificate ID: A0A9ACF47083.'
         }
     ];
 
