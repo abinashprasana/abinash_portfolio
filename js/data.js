@@ -10,16 +10,16 @@ window.PORTFOLIO_DATA = {
 
   projects: [
     {
+      title: "Irish Banking Customer Churn Predictor",
+      description: "An explainable ML system predicting retail banking customer churn, built around the KBC Bank Ireland and Ulster Bank market exits (2022–2023). Uses XGBoost with SMOTEENN class balancing, SHAP explainability, and DICE counterfactual explanations aligned with EU AI Act Article 86, deployed as a five-tab interactive Streamlit dashboard.",
+      tags: ["Python", "XGBoost", "SMOTEENN", "SHAP", "DICE", "Streamlit", "Plotly", "Pandas"],
+      repo: "https://github.com/abinashprasana/irish-banking-churn"
+    },
+    {
       title: "Clinical RAG — Medical Q&A on Clinical Notes",
       description: "A RAG pipeline for clinical question answering built on de-identified MIMIC-IV discharge notes, accessed via CITI ethics training and a PhysioNet Data Use Agreement. Achieves 70% accuracy at a mean latency of 10.91 seconds using section-aware chunking, FAISS vector search and Flan-T5, with a hard refusal when no relevant context is retrieved.",
       tags: ["Python", "FAISS", "Flan-T5", "Flask", "Clinical NLP", "RAG"],
       repo: "https://github.com/abinashprasana/clinical-rag-mimic"
-    },
-    {
-      title: "PaperPilot — Local RAG Research Assistant",
-      description: "A local semantic search and Q&A assistant for research PDFs that grounds every answer in retrieved document content, running entirely on CPU with no cloud API required. Tuned to chunk size 1,200, overlap 150 and top-k 6, it delivers around 25-second responses using Sentence Transformers for embeddings and Gemma 3 for generation.",
-      tags: ["Python", "FAISS", "Ollama", "Streamlit", "Sentence Transformers", "RAG"],
-      repo: "https://github.com/abinashprasana/paperpilot-ollama"
     },
     {
       title: "Dáil LLM — Irish Parliamentary Transformer",
@@ -51,18 +51,6 @@ window.PORTFOLIO_DATA = {
       tags: ["Python", "Scikit-learn", "Random Forest", "Streamlit", "Pandas"],
       repo: "https://github.com/abinashprasana/riskradar-it-incident-sla-risk"
     },
-    {
-      title: "Hospital Readmission Prediction",
-      description: "An end-to-end ML pipeline on 101,766 diabetic patient records from the UCI Diabetes 130-US Hospitals dataset that predicts 30-day readmission risk using EDA, feature engineering and model comparison. XGBoost achieved ROC-AUC of 0.88 and outperformed the Random Forest baseline at 0.85, with full classification reports and confusion matrix evaluation.",
-      tags: ["Python", "XGBoost", "Scikit-learn", "Pandas", "NumPy", "Healthcare Analytics"],
-      repo: "https://github.com/abinashprasana/Hospital_Readmission_Prediction"
-    },
-    {
-      title: "Irish News NLP — Topic Classification and Sentiment",
-      description: "An NLP pipeline classifying Irish Times articles by topic and analysing sentiment across categories including Politics, Economy, Culture and Sport, using TF-IDF with up to 20,000 features. Linear SVM and Logistic Regression classifiers are compared with VADER sentiment tagging, with visualisations of accuracy, confusion matrices and per-category sentiment distribution.",
-      tags: ["Python", "NLTK", "Scikit-learn", "TF-IDF", "VADER", "Pandas"],
-      repo: "https://github.com/abinashprasana/Irish_News_NLP_Classification"
-    }
   ],
 
   skills: [
