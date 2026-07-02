@@ -23,7 +23,7 @@
   }
   function themeLabel() {
     var t = document.documentElement.getAttribute('data-theme');
-    if (toggle) toggle.textContent = t === 'light' ? 'MODE ▸ FROST' : 'MODE ▸ DEEP';
+    if (toggle) toggle.textContent = t === 'light' ? 'THEME ▸ LIGHT' : 'THEME ▸ DARK';
   }
   themeLabel();
   if (toggle) {
@@ -107,30 +107,6 @@
     statEls.forEach(function (el) { statIo.observe(el); });
   } else {
     statEls.forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
-  }
-
-  /* ---------- Pointer parallax on hero bento tiles ---------- */
-  var bento = document.getElementById('hero-bento');
-  if (bento && finePointer && !reducedMotion) {
-    var tiles = bento.querySelectorAll('.tile');
-    var px = 0, py = 0, rafPending = false;
-    function applyParallax() {
-      rafPending = false;
-      tiles.forEach(function (t) {
-        var depth = parseFloat(t.getAttribute('data-parallax')) || 4;
-        t.style.transform = 'translate(' + (px * depth).toFixed(1) + 'px,' + (py * depth).toFixed(1) + 'px)';
-      });
-    }
-    bento.addEventListener('mousemove', function (e) {
-      var r = bento.getBoundingClientRect();
-      px = ((e.clientX - r.left) / r.width - 0.5) * 2 * -1;
-      py = ((e.clientY - r.top) / r.height - 0.5) * 2 * -1;
-      if (!rafPending) { rafPending = true; window.requestAnimationFrame(applyParallax); }
-    }, { passive: true });
-    bento.addEventListener('mouseleave', function () {
-      px = 0; py = 0;
-      if (!rafPending) { rafPending = true; window.requestAnimationFrame(applyParallax); }
-    });
   }
 
   /* ---------- Copy email + toast ---------- */
