@@ -1,641 +1,439 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="Abinash Prasana Selvanathan - AI & Data portfolio">
-    <title>Abinash Prasana Selvanathan | Portfolio</title>
-
-    <meta property="og:title" content="Abinash Prasana Selvanathan | Portfolio">
-    <meta property="og:description" content="MSc Artificial Intelligence student building practical ML/NLP projects.">
-    <meta property="og:image" content="assets/profile.jpeg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://abinashprasana.github.io/abinash_portfolio/">
-    <meta property="og:site_name" content="Abinash Prasana Selvanathan | Portfolio">
-
-    <link rel="icon" type="image/jpeg" href="assets/profile.jpeg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Abinash Prasana Selvanathan | Portfolio</title>
+  <meta name="description" content="MSc Artificial Intelligence student in Dublin. Practical, explainable machine learning projects.">
+  <meta property="og:title" content="Abinash Prasana Selvanathan | Portfolio">
+  <meta property="og:description" content="MSc Artificial Intelligence student in Dublin. Practical, explainable machine learning projects.">
+  <meta property="og:image" content="assets/profile.jpeg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://abinashprasana.github.io/abinash_portfolio/">
+  <meta property="og:site_name" content="Abinash Prasana Selvanathan | Portfolio">
+  <link rel="icon" type="image/jpeg" href="assets/profile.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-    <!-- Intro Splash -->
-    <div class="intro" id="intro" aria-hidden="true">
-        <div class="intro-inner">
-            <p class="intro-eyebrow">Portfolio</p>
-            <h2 class="intro-mark" aria-label="AP"><span class="im-a" aria-hidden="true">A</span><span class="im-p" aria-hidden="true">P</span></h2>
-            <div class="intro-rule"></div>
-            <p class="intro-name">Abinash Prasana Selvanathan</p>
-            <p class="intro-role">MSc Artificial Intelligence · Dublin</p>
+
+  <!-- Background layers: grid, drifting light caustics, aurora blobs, frost motes -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-caustics" aria-hidden="true"></div>
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+  <div class="blob blob-c" aria-hidden="true"></div>
+  <canvas id="motes" aria-hidden="true"></canvas>
+
+  <!-- Scroll progress -->
+  <div id="progress-bar" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-bar">
+      <div class="header-id">
+        <a href="#home">SELVANATHAN, A.P.</a>
+        <span>SPECIMEN: PORTFOLIO</span>
+      </div>
+      <nav class="header-nav">
+        <a href="#about">ABOUT</a>
+        <a href="#experience">WORK</a>
+        <a href="#projects">EXPERIMENTS</a>
+        <a href="#skills">SKILLS</a>
+        <a href="#certifications">CERTS</a>
+        <a href="#contact">CONTACT</a>
+      </nav>
+      <div class="header-meta">
+        <span class="depth-label">DEPTH <span id="depth-readout">000%</span></span>
+        <button id="theme-toggle" type="button">MODE &#9656; DEEP</button>
+        <a class="header-resume" href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="home" data-screen-label="Hero">
+    <p class="hero-kicker reveal">FIELD NOTES &middot; MSC ARTIFICIAL INTELLIGENCE &middot; DUBLIN, 2025&ndash;2026</p>
+    <h1 class="hero-title reveal">Abinash Prasana<br>
+      <span class="lens">Selvanathan<span class="lens-glass"><span class="lens-mag">Selvanathan</span><span class="lens-sheen"></span></span></span>
+    </h1>
+    <p class="hero-role reveal">ROLE &#9656; <span id="role-word">Data Scientist</span><span class="caret"></span></p>
+
+    <div class="hero-grid reveal">
+      <div class="hero-abstract glass">
+        <p class="abstract-label">ABSTRACT</p>
+        <p class="body">MSc Artificial Intelligence student at Dublin Business School, with earlier experience at Deloitte supporting healthcare IT systems in production. I build data and ML projects that aim to be practical and explainable. Each project below is treated like an experiment, with a method and a measured result.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="#projects">View experiments &darr;</a>
+          <a class="btn btn-glass" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+          <a class="btn btn-ghost" href="#contact">Contact &rarr;</a>
         </div>
-        <div class="intro-bar"><div class="intro-bar-fill"></div></div>
+      </div>
+      <div class="hero-side">
+        <div class="hero-photo glass">
+          <img src="assets/profile.jpeg" alt="Abinash Prasana Selvanathan">
+          <p>FIG. 01 &middot; DUBLIN, IE</p>
+        </div>
+        <div class="hero-facts">
+          <span><span class="tick">&#9656;</span> 7 experiments logged</span>
+          <span><span class="tick">&#9656;</span> 6 certifications verified</span>
+          <span><span class="tick">&#9656;</span> open to roles, Sept 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 ABOUT ============ -->
+  <section id="about" data-screen-label="About">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.01 &middot; BACKGROUND AND FOCUS AREAS</p>
+      <h2 class="sec-title">ABOUT <span class="lens">ME<span class="lens-glass"><span class="lens-mag">ME</span><span class="lens-sheen"></span></span></span></h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-body glass reveal">
+        <p>I am an MSc Artificial Intelligence student at Dublin Business School, graduating in September 2026. My focus during the MSc has been machine learning, NLP and data systems, building models and pipelines end to end across a range of problems.</p>
+        <p>Before the MSc I spent over a year at Deloitte as an Associate Analyst, supporting HIPAA-compliant healthcare IT systems in production. That work gave me a solid grounding in regulated environments where accuracy and documentation genuinely matter. I enjoyed it, but I wanted to push further technically, so I moved to Ireland for the MSc.</p>
+        <p>I am based in Dublin and open to graduate roles from September 2026 across AI, data and software engineering.</p>
+      </div>
+      <div class="about-side">
+        <div class="fact-card glass reveal">
+          <p class="fc-label">EDUCATION</p>
+          <p class="fc-title">MSc Artificial Intelligence</p>
+          <p class="fc-sub">Dublin Business School</p>
+        </div>
+        <div class="fact-card glass reveal">
+          <p class="fc-label">EXPERIENCE</p>
+          <p class="fc-title">Associate Analyst</p>
+          <p class="fc-sub">Deloitte</p>
+        </div>
+        <div class="fact-card glass reveal">
+          <p class="fc-label">FOCUS</p>
+          <p class="fc-title">ML, NLP, Data Science</p>
+          <p class="fc-sub">Python ecosystem</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 WORK & EDUCATION ============ -->
+  <section id="experience" data-screen-label="Experience">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.02 &middot; PROFESSIONAL JOURNEY AND ACADEMIC BACKGROUND</p>
+      <h2 class="sec-title">WORK &amp; <span class="lens">EDUCATION<span class="lens-glass"><span class="lens-mag">EDUCATION</span><span class="lens-sheen"></span></span></span></h2>
+    </div>
+    <div class="exp-log">
+
+      <div class="exp-row reveal">
+        <div class="exp-meta">
+          <p class="em-code">LOG-01 &middot; DELOITTE</p>
+          <p class="em-date">NOV 2023 &ndash; DEC 2024</p>
+          <p class="em-loc">HYDERABAD, INDIA</p>
+        </div>
+        <div class="exp-card glass">
+          <h3>Associate Analyst</h3>
+          <p class="ec-sub">HEALTHCARE IT</p>
+          <p class="body">I supported HIPAA-compliant healthcare IT systems in production environments serving clinical users, working across Epic EMR, ServiceNow and Active Directory. The role meant operating precisely within regulated, client-facing infrastructure, where accuracy and documentation mattered as much as the fix itself.</p>
+          <div class="exp-bullets">
+            <span class="row"><span class="tick">&#9656;</span><span>Diagnosed and resolved software, hardware and access issues across hospital infrastructure, keeping downtime minimal for clinical staff.</span></span>
+            <span class="row"><span class="tick">&#9656;</span><span>Conducted root-cause analysis on IT incident data, identified recurring failure patterns and documented resolutions to support audits and compliance records.</span></span>
+            <span class="row"><span class="tick">&#9656;</span><span>Collaborated with infrastructure and compliance teams on patch cycles, application testing and user provisioning through Active Directory and ServiceNow workflows.</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-row reveal">
+        <div class="exp-meta">
+          <p class="em-code">LOG-02 &middot; DBS</p>
+          <p class="em-date">2025 &ndash; PRESENT</p>
+          <p class="em-loc">DUBLIN, IRELAND</p>
+        </div>
+        <div class="exp-card glass">
+          <h3>MSc Artificial Intelligence</h3>
+          <p class="ec-sub">STUDENT &middot; DUBLIN BUSINESS SCHOOL</p>
+          <p class="body">The MSc covers machine learning, deep learning, natural language processing and AI systems design, with a strong emphasis on applied work alongside the theory. The coursework pushed me into areas I had not worked in before, from building models from scratch to working with large datasets and thinking carefully about how systems behave in practice rather than just on paper.</p>
+          <p class="body">Coming in with production IT experience from Deloitte shaped how I approached the technical work. Rather than treating modules as purely academic exercises, I kept asking whether what I was building would hold up outside a classroom. That is why most of what I built during the MSc is practical and measurable rather than theoretical.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ 03 PROJECTS ============ -->
+  <section id="projects" data-screen-label="Projects">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.03 &middot; APPLIED ML, NLP AND PRACTICAL TOOLING</p>
+      <h2 class="sec-title">SELECTED <span class="lens">PROJECTS<span class="lens-glass"><span class="lens-mag">PROJECTS</span><span class="lens-sheen"></span></span></span></h2>
     </div>
 
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-    <div class="cursor-trail"></div>
-    <div class="cursor-trail"></div>
-    <div class="cursor-trail"></div>
-    <div class="cursor-trail"></div>
-    <div class="cursor-trail"></div>
+    <div class="exp-list">
 
-    <!-- Scroll Progress -->
-    <div class="scroll-progress"></div>
-
-    <!-- Particles Canvas -->
-    <canvas id="particles"></canvas>
-
-    <!-- Background -->
-    <div class="bg">
-        <div class="bg-grid"></div>
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-        <div class="bg-aurora" aria-hidden="true">
-            <div class="aurora-band aurora-1"></div>
-            <div class="aurora-band aurora-2"></div>
-            <div class="aurora-band aurora-3"></div>
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/irish-banking-churn" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-001 &middot; CHURN / EXPLAINABLE ML</span>
+          <span class="pc-status">STATUS: DEPLOYED &#10003;</span>
         </div>
-        <div class="noise"></div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>Irish Banking Customer Churn Predictor</h3>
+            <p>An explainable ML system predicting retail banking customer churn, built around the KBC Bank Ireland and Ulster Bank market exits of 2022 and 2023. XGBoost with SMOTEENN class balancing, SHAP explainability and DICE counterfactuals, deployed as a five-tab interactive Streamlit dashboard.</p>
+            <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>SMOTEENN</span><span>SHAP</span><span>DICE</span><span>Streamlit</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">Art. 86</p>
+            <p class="pm-1l">aligned with the EU AI Act</p>
+            <p class="pm-2">5 tabs</p>
+            <p class="pm-2l">interactive dashboard</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/clinical-rag-mimic" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-002 &middot; CLINICAL NLP / RAG</span>
+          <span class="pc-status">STATUS: EVALUATED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>Clinical RAG, medical Q&amp;A on clinical notes</h3>
+            <p>A RAG pipeline for clinical question answering built on de-identified MIMIC-IV discharge notes, accessed through CITI ethics training and a PhysioNet data use agreement. Section-aware chunking, FAISS vector search and Flan-T5, with a hard refusal when no relevant context is retrieved.</p>
+            <div class="pc-tags"><span>Python</span><span>FAISS</span><span>Flan-T5</span><span>Flask</span><span>Clinical NLP</span><span>RAG</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">70%</p>
+            <p class="pm-1l">answer accuracy</p>
+            <p class="pm-2">10.91s</p>
+            <p class="pm-2l">mean latency</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/dail-llm" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-003 &middot; TRANSFORMER / FROM SCRATCH</span>
+          <span class="pc-status">STATUS: TRAINED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>D&aacute;il LLM, an Irish parliamentary transformer</h3>
+            <p>A character-level transformer trained from scratch on 4.4 million D&aacute;il &Eacute;ireann parliamentary speeches spanning 1919 to 2013. The full decoder-only architecture was built in PyTorch with no pre-trained weights, plus a four-tab Streamlit dashboard and attention heatmaps.</p>
+            <div class="pc-tags"><span>Python</span><span>PyTorch</span><span>Streamlit</span><span>Transformers</span><span>NLP</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">4.07</p>
+            <p class="pm-1l">perplexity, 3.2M parameters</p>
+            <p class="pm-2">0.0000</p>
+            <p class="pm-2l">repetition score</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/no2-forecasting-deep-learning" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-004 &middot; TIME SERIES / DEEP LEARNING</span>
+          <span class="pc-status">STATUS: BENCHMARKED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>NO&#8322; Forecasting, deep learning for air quality</h3>
+            <p>A benchmarking study comparing LSTM, GRU and temporal convolutional networks for hourly NO&#8322; forecasting on real UK DEFRA sensor data from Marylebone Road in London, with a Flask dashboard for comparing predictions against actuals across time windows.</p>
+            <div class="pc-tags"><span>Python</span><span>TensorFlow</span><span>LSTM</span><span>GRU</span><span>TCN</span><span>Flask</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">6.09</p>
+            <p class="pm-1l">RMSE, &micro;g/m&sup3; (best LSTM)</p>
+            <p class="pm-2">~20%</p>
+            <p class="pm-2l">improvement over GRU</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/steam-recommender-xai" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-005 &middot; RECOMMENDERS / EXPLAINABLE AI</span>
+          <span class="pc-status">STATUS: EVALUATED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>Steam Recommender, explainable AI for games</h3>
+            <p>A hybrid recommendation system combining Bayesian Personalised Ranking with content-based filtering on 31,799 real Steam interactions, extended with SHAP and LIME to explain individual recommendations, plus popularity bias analysis and two mitigation strategies.</p>
+            <div class="pc-tags"><span>Python</span><span>BPR</span><span>SHAP</span><span>LIME</span><span>Flask</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">0.5203</p>
+            <p class="pm-1l">NDCG@10</p>
+            <p class="pm-2">0.4502</p>
+            <p class="pm-2l">MAP@10</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/payments-analytics" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-006 &middot; SQL / PAYMENTS ANALYTICS</span>
+          <span class="pc-status">STATUS: ANALYSED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>Payments Analytics, PostgreSQL on transactions</h3>
+            <p>A six-table PostgreSQL schema modelling payments architecture across 5,000 customers, 800 merchants and 80,000 synthetic transactions, with eight progressive SQL files covering window functions, CTEs and cohort analysis, presented in a four-tab Streamlit dashboard.</p>
+            <div class="pc-tags"><span>PostgreSQL 15</span><span>SQL</span><span>psycopg2</span><span>Streamlit</span><span>Plotly</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">~4&times;</p>
+            <p class="pm-1l">fraud rate, high vs low risk merchants</p>
+            <p class="pm-2">80,000</p>
+            <p class="pm-2l">transactions modelled</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="project-card glass reveal" href="https://github.com/abinashprasana/riskradar-it-incident-sla-risk" target="_blank" rel="noopener">
+        <div class="pc-head">
+          <span class="pc-code">EXP-007 &middot; CLASSIFICATION / IT OPERATIONS</span>
+          <span class="pc-status">STATUS: VALIDATED &#10003;</span>
+        </div>
+        <div class="pc-grid">
+          <div class="pc-main">
+            <h3>RiskRadar, IT incident SLA risk prediction</h3>
+            <p>A machine learning tool that predicts SLA breach risk for IT incidents drawn from 141,712 raw event logs, enabling faster triage through data-driven risk-band scoring. The Random Forest classifier correctly identified 1,569 breach cases across 24,918 incidents.</p>
+            <div class="pc-tags"><span>Python</span><span>Scikit-learn</span><span>Random Forest</span><span>Streamlit</span></div>
+          </div>
+          <div class="pc-metrics">
+            <p class="pm-label">MEASURED RESULT</p>
+            <p class="pm-1">92%</p>
+            <p class="pm-1l">accuracy, F1 0.887</p>
+            <p class="pm-2">0.9684</p>
+            <p class="pm-2l">AUC-ROC</p>
+          </div>
+        </div>
+      </a>
+
+    </div>
+    <p class="gh-note reveal">// more projects and experiments are logged on <a href="https://github.com/abinashprasana" target="_blank" rel="noopener">GitHub</a></p>
+  </section>
+
+  <!-- ============ 04 SKILLS ============ -->
+  <section id="skills" data-screen-label="Skills">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.04 &middot; TOOLS, FRAMEWORKS AND DOMAIN KNOWLEDGE</p>
+      <h2 class="sec-title">TECHNICAL <span class="lens">SKILLS<span class="lens-glass"><span class="lens-mag">SKILLS</span><span class="lens-sheen"></span></span></span></h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card glass reveal">
+        <div class="sc-head"><span class="sc-code">GRP-01 &middot; LANG</span><span class="sc-name">Languages &amp; Core</span></div>
+        <div class="skill-chips"><span>Python</span><span>SQL</span></div>
+      </div>
+      <div class="skill-card glass reveal">
+        <div class="sc-head"><span class="sc-code">GRP-02 &middot; ML</span><span class="sc-name">ML &amp; AI</span></div>
+        <div class="skill-chips"><span>Machine Learning</span><span>Deep Learning</span><span>NLP</span><span>RAG</span><span>PyTorch</span><span>TensorFlow</span><span>Scikit-learn</span><span>Hugging Face</span><span>Explainable AI</span></div>
+      </div>
+      <div class="skill-card glass reveal">
+        <div class="sc-head"><span class="sc-code">GRP-03 &middot; DATA</span><span class="sc-name">Data &amp; Analytics</span></div>
+        <div class="skill-chips"><span>Data Science</span><span>Pandas</span><span>NumPy</span><span>PostgreSQL</span><span>EDA</span><span>Time Series</span><span>Plotly</span><span>Data Visualization</span></div>
+      </div>
+      <div class="skill-card glass reveal">
+        <div class="sc-head"><span class="sc-code">GRP-04 &middot; TOOLS</span><span class="sc-name">Tools &amp; Workflow</span></div>
+        <div class="skill-chips"><span>Jupyter</span><span>Flask</span><span>Git &amp; GitHub</span><span>RESTful APIs</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 CERTIFICATIONS ============ -->
+  <section id="certifications" data-screen-label="Certifications">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.05 &middot; PROFESSIONAL CREDENTIALS AND COURSE COMPLETIONS</p>
+      <h2 class="sec-title">MY <span class="lens">CERTIFICATIONS<span class="lens-glass"><span class="lens-mag">CERTIFICATIONS</span><span class="lens-sheen"></span></span></span></h2>
+    </div>
+    <div class="certs-grid">
+      <a class="cert-card glass reveal" href="https://www.theforage.com/completion-certificates/Sj7temL583QAYpHXD/E6McHJDKsQYh79moz_Sj7temL583QAYpHXD_696807b3afb60a1158b52c05_1768583777280_completion_certificate.pdf" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-01</span>
+        <span class="cc-title">JPMorgan Chase &amp; Co. Software Engineering Job Simulation</span>
+        <span class="cc-issuer">Forage &middot; January 2026</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+      <a class="cert-card glass reveal" href="https://www.credly.com/badges/babf18dc-fa2a-4ab4-ad3e-e728752e5098/linked_in_profile" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-02</span>
+        <span class="cc-title">IBM Data Science Professional Certificate (V3)</span>
+        <span class="cc-issuer">Coursera &middot; November 2025</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+      <a class="cert-card glass reveal" href="assets/aws-cloud-practitioner-cert.png" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-03</span>
+        <span class="cc-title">AWS Cloud Practitioner Essentials</span>
+        <span class="cc-issuer">AWS Training &amp; Certification &middot; May 2026</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+      <a class="cert-card glass reveal" href="https://verify.skilljar.com/c/ng4mrdhdsa4b" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-04</span>
+        <span class="cc-title">Claude Code in Action</span>
+        <span class="cc-issuer">Anthropic &middot; March 2026</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+      <a class="cert-card glass reveal" href="https://www.credly.com/badges/bc6d1521-488c-431d-b4ec-1eb6f386e08a/linked_in_profile" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-05</span>
+        <span class="cc-title">SAS Programming 1: Essentials</span>
+        <span class="cc-issuer">SAS &middot; Credly Badge</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+      <a class="cert-card glass reveal" href="https://www.hackerrank.com/certificates/iframe/a0a9acf47083" target="_blank" rel="noopener">
+        <span class="cc-code">CERT-06</span>
+        <span class="cc-title">SQL (Intermediate)</span>
+        <span class="cc-issuer">HackerRank &middot; June 2026</span>
+        <span class="cc-view">VIEW &#8599;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ 06 CONTACT ============ -->
+  <section id="contact" data-screen-label="Contact">
+    <div class="sec-head reveal">
+      <p class="sec-kicker">SEC.06 &middot; OPEN TO OPPORTUNITIES IN IRELAND AND BEYOND</p>
+      <h2 class="sec-title">LET'S <span class="lens">CONNECT<span class="lens-glass"><span class="lens-mag">CONNECT</span><span class="lens-sheen"></span></span></span></h2>
     </div>
 
-    <!-- Header -->
-    <header class="header" id="header">
-        <div class="container header-inner">
-            <a href="#home" class="brand">
-                <span class="brand-mark">A</span>
-                <span class="brand-name">Abinash</span>
-            </a>
-
-            <nav class="nav" id="nav">
-                <a href="#about" class="nav-link">About</a>
-                <a href="#experience" class="nav-link">Experience</a>
-                <a href="#projects" class="nav-link">Projects</a>
-                <a href="#skills" class="nav-link">Skills</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </nav>
-
-            <div class="header-actions">
-                <a href="assets/resume.pdf" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
-                    Resume
-                </a>
-
-                <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
-                    <!-- Dark: moon -->
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                    </svg>
-                    <!-- Cream: book/editorial -->
-                    <svg class="icon-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                    </svg>
-                    <!-- Light: sun -->
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5" />
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                    </svg>
-                </button>
-
-                <button class="burger" id="burger" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
+    <div class="contact-grid reveal">
+      <div class="contact-card glass">
+        <p>I am looking for graduate or internship roles in Ireland. Happy to talk about my projects, my background, or anything AI and data related.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="mailto:abinashprasana400@gmail.com">Send email</a>
+          <a class="btn btn-glass" href="assets/resume.pdf" target="_blank" rel="noopener">Download resume &#8599;</a>
         </div>
-
-        <!-- Mobile Menu -->
-        <nav class="mobile-nav" id="mobileNav" hidden>
-            <a href="#about" class="mobile-link">About</a>
-            <a href="#experience" class="mobile-link">Experience</a>
-            <a href="#projects" class="mobile-link">Projects</a>
-            <a href="#skills" class="mobile-link">Skills</a>
-            <a href="#contact" class="mobile-link">Contact</a>
-            <a href="assets/resume.pdf" target="_blank" rel="noopener" class="mobile-link">Resume</a>
-        </nav>
-    </header>
-
-    <!-- Hero -->
-    <section id="home" class="hero">
-        <div class="container hero-grid">
-            <div class="hero-content">
-                <div class="reveal">
-                    <div class="chip">
-                        <span class="chip-dot"></span>
-                        <span>Open to graduate roles and internships in Ireland</span>
-                    </div>
-                </div>
-
-                <h1 class="hero-title reveal">
-                    <span class="hero-greeting">MSc Artificial Intelligence · Dublin</span>
-                    <span class="gradient-text serif-name">Abinash Prasana Selvanathan</span>
-                </h1>
-
-                <p class="hero-subtitle reveal">
-                    <span class="typewriter" id="typewriter"></span>
-                    <span class="cursor-blink">|</span>
-                </p>
-
-                <p class="hero-desc reveal">
-                    MSc Artificial Intelligence student at Dublin Business School with prior experience at Deloitte
-                    supporting healthcare IT environments. I build data and ML projects focused on practical,
-                    explainable solutions.
-                </p>
-
-                <div class="hero-actions reveal">
-                    <a href="#projects" class="btn btn-primary magnetic">
-                        View Projects
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="assets/resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Resume</a>
-                    <a href="#contact" class="btn btn-ghost magnetic">Contact</a>
-
-                    <div class="social-links">
-                        <a href="https://www.linkedin.com/in/abinash-prasana-s-2515b7221" target="_blank" rel="noopener"
-                            class="social-btn magnetic" aria-label="LinkedIn">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z" />
-                            </svg>
-                        </a>
-                        <a href="https://github.com/abinashprasana" target="_blank" rel="noopener"
-                            class="social-btn magnetic" aria-label="GitHub">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 .5a11.5 11.5 0 00-3.64 22.4c.58.1.8-.26.8-.57v-2c-3.26.7-3.95-1.36-3.95-1.36-.53-1.36-1.3-1.72-1.3-1.72-1.07-.72.08-.7.08-.7 1.18.08 1.8 1.22 1.8 1.22 1.05 1.8 2.76 1.28 3.44.98.1-.76.4-1.28.73-1.57-2.6-.3-5.34-1.3-5.34-5.8 0-1.28.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.16 0 0 1-.32 3.3 1.2a11.3 11.3 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.64.24 2.86.12 3.16.76.82 1.22 1.86 1.22 3.14 0 4.52-2.75 5.5-5.37 5.8.42.36.8 1.08.8 2.18v3.23c0 .32.22.68.8.57A11.5 11.5 0 0012 .5z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="hero-info reveal">
-                    <div class="info-item">
-                        <span class="info-label">Location</span>
-                        <span class="info-value">Dublin, Ireland 📍</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Email</span>
-                        <button class="info-value copy-btn" id="copyEmail" data-email="abinashprasana400@gmail.com">
-                            abinashprasana400@gmail.com
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2" />
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hero-card reveal">
-                <div class="profile-card">
-                    <div class="profile-glow"></div>
-                    <div class="profile-inner">
-                        <div class="profile-avatar">
-                            <img src="assets/profile.jpeg" alt="Abinash Prasana Selvanathan" width="120" height="120">
-                            <div class="avatar-ring"></div>
-                        </div>
-                        <h2 class="profile-name">Abinash Prasana Selvanathan</h2>
-                        <p class="muted" style="font-size: 13px; margin-top: 8px;">MSc in AI @ Dublin Business School
-                            (DBS)</p>
-
-                        <div class="profile-stats">
-                            <div class="stat">
-                                <span class="stat-value" data-count="7">0</span>
-                                <span class="stat-label">Projects</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-value" data-count="23">0</span>
-                                <span class="stat-label">Skills</span>
-                            </div>
-                            <div class="stat">
-                                <span class="stat-value" data-count="7">0</span>
-                                <span class="stat-label">Certs</span>
-                            </div>
-                        </div>
-
-                        <div class="profile-actions">
-                            <a href="#contact" class="btn btn-primary btn-sm magnetic">Get in Touch</a>
-                            <a href="assets/resume.pdf" target="_blank" rel="noopener"
-                                class="btn btn-ghost btn-sm magnetic">Resume</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Marquee Strip -->
-    <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-            <span class="marquee-item">Machine Learning</span>
-            <span class="marquee-item">Python</span>
-            <span class="marquee-item">Natural Language Processing</span>
-            <span class="marquee-item">Data Science</span>
-            <span class="marquee-item">RAG &amp; LLMs</span>
-            <span class="marquee-item">Deep Learning</span>
-            <span class="marquee-item">SQL</span>
-            <span class="marquee-item">TensorFlow</span>
-            <span class="marquee-item">Healthcare AI</span>
-            <span class="marquee-item">Scikit-learn</span>
-            <span class="marquee-item">Data Analytics</span>
-            <span class="marquee-item">Dublin, Ireland</span>
-            <!-- Duplicate for seamless loop -->
-            <span class="marquee-item">Machine Learning</span>
-            <span class="marquee-item">Python</span>
-            <span class="marquee-item">Natural Language Processing</span>
-            <span class="marquee-item">Data Science</span>
-            <span class="marquee-item">RAG &amp; LLMs</span>
-            <span class="marquee-item">Deep Learning</span>
-            <span class="marquee-item">SQL</span>
-            <span class="marquee-item">TensorFlow</span>
-            <span class="marquee-item">Healthcare AI</span>
-            <span class="marquee-item">Scikit-learn</span>
-            <span class="marquee-item">Data Analytics</span>
-            <span class="marquee-item">Dublin, Ireland</span>
-        </div>
+      </div>
+      <div class="contact-links">
+        <a href="mailto:abinashprasana400@gmail.com"><span>EMAIL</span><span>abinashprasana400@gmail.com &#8599;</span></a>
+        <a href="https://www.linkedin.com/in/abinash-prasana-s-2515b7221" target="_blank" rel="noopener"><span>LINKEDIN</span><span>abinash-prasana-s &#8599;</span></a>
+        <a href="https://github.com/abinashprasana" target="_blank" rel="noopener"><span>GITHUB</span><span>github.com/abinashprasana &#8599;</span></a>
+      </div>
     </div>
 
-    <!-- About -->
-    <section id="about" class="section">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">01</span>
-                <h2 class="section-title">About <em>Me</em></h2>
-                <p class="section-subtitle">Background and focus areas</p>
-            </div>
-
-            <div class="about-grid">
-                <div class="about-text reveal">
-                    <p>I am an <span class="highlight">MSc Artificial Intelligence</span> student at Dublin Business
-                        School, graduating September 2026. My focus during the MSc has been on machine learning, NLP
-                        and data systems, building models and pipelines end to end across a range of problems.</p>
-                    <p>Before the MSc I spent over a year at <span class="highlight">Deloitte</span> as an Associate
-                        Analyst supporting HIPAA-compliant healthcare IT systems in production, which gave me a solid
-                        grounding in working within regulated environments where accuracy and documentation standards
-                        matter. I enjoyed that work but wanted to push further technically, so I moved to Ireland to
-                        do the MSc.</p>
-                    <p>I am based in Dublin and open to graduate roles from September 2026 across AI, data and
-                        software engineering.</p>
-                </div>
-
-                <div class="about-cards reveal">
-                    <div class="about-card">
-                        <div class="about-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                            </svg>
-                        </div>
-                        <h3>Education</h3>
-                        <p>MSc Artificial Intelligence<br><span class="muted">Dublin Business School</span></p>
-                    </div>
-                    <div class="about-card">
-                        <div class="about-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="7" width="20" height="14" rx="2" />
-                                <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
-                            </svg>
-                        </div>
-                        <h3>Experience</h3>
-                        <p>Associate Analyst<br><span class="muted">Deloitte</span></p>
-                    </div>
-                    <div class="about-card">
-                        <div class="about-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 6v6l4 2" />
-                            </svg>
-                        </div>
-                        <h3>Focus</h3>
-                        <p>ML, NLP, Data Science<br><span class="muted">Python Ecosystem</span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Experience -->
-    <section id="experience" class="section section-alt">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">02</span>
-                <h2 class="section-title">Work &amp; <em>Education</em></h2>
-                <p class="section-subtitle">Professional journey and academic background</p>
-            </div>
-
-            <div class="xp-list">
-                <div class="xp reveal">
-                    <div class="xp-meta">
-                        <span class="xp-period">Nov 2023 – Dec 2024</span>
-                        <span class="xp-company">Deloitte</span>
-                    </div>
-                    <div class="xp-content card">
-                        <div class="xp-header">
-                            <h3 class="xp-title">Associate <em>Analyst</em></h3>
-                            <span class="badge">Healthcare IT</span>
-                            <span class="badge">Hyderabad, India</span>
-                        </div>
-                        <p class="timeline-desc">I supported HIPAA-compliant healthcare IT systems in production
-                            environments serving clinical users, working across Epic EMR, ServiceNow, and Active
-                            Directory. The role required operating precisely within regulated, client-facing
-                            infrastructure where accuracy and documentation mattered as much as the fix itself.</p>
-                        <ul class="timeline-highlights">
-                            <li>Diagnosed and resolved software, hardware, and access issues across hospital
-                                infrastructure, keeping downtime minimal for clinical staff.</li>
-                            <li>Conducted root-cause analysis on IT incident data, identified recurring failure
-                                patterns, and documented resolutions to support audits and compliance records.</li>
-                            <li>Collaborated with infrastructure and compliance teams on patch cycles, application
-                                testing, and user provisioning through Active Directory and ServiceNow workflows.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="xp reveal">
-                    <div class="xp-meta">
-                        <span class="xp-period">2025 – Present</span>
-                        <span class="xp-company">Dublin Business School</span>
-                    </div>
-                    <div class="xp-content card">
-                        <div class="xp-header">
-                            <h3 class="xp-title">MSc Artificial <em>Intelligence</em></h3>
-                            <span class="badge">Student</span>
-                        </div>
-                        <p class="timeline-desc">The MSc at Dublin Business School covers machine learning, deep
-                            learning, natural language processing and AI systems design, with a strong emphasis on
-                            applied work alongside the theory. The coursework pushed me into areas I had not worked
-                            in before, from building models from scratch to working with large datasets and thinking
-                            carefully about how systems behave in practice rather than just on paper.</p>
-                        <p class="timeline-desc">Coming into the programme with production
-                            IT experience from Deloitte shaped how I approached the technical work. Rather than
-                            treating modules as purely academic exercises, I kept asking whether what I was building
-                            would hold up outside a classroom, which is why most of what I built during the MSc is
-                            practical and measurable rather than theoretical.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects -->
-    <section id="projects" class="section">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">03</span>
-                <h2 class="section-title"><em>Selected</em> Projects</h2>
-                <p class="section-subtitle">Applied ML, NLP, and practical tooling</p>
-            </div>
-
-            <div class="projects-carousel-wrapper reveal">
-                <div class="projects-carousel" id="projectsCarousel"></div>
-
-                <div class="carousel-controls">
-                    <button class="carousel-btn magnetic" id="projectsPrev" aria-label="Previous project">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 18l-6-6 6-6" />
-                        </svg>
-                    </button>
-
-                    <div class="carousel-dots" id="projectsDots"></div>
-
-                    <button class="carousel-btn magnetic" id="projectsNext" aria-label="Next project">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 18l6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <p class="text-center muted reveal" style="margin-top: 40px; font-size: 14px; text-align: center;">
-                More projects and experiments are available on my <a href="https://github.com/abinashprasana"
-                    target="_blank" rel="noopener"
-                    style="color: var(--accent); text-decoration: underline; text-underline-offset: 4px;">GitHub</a>.
-            </p>
-        </div>
-    </section>
-
-    <!-- Skills -->
-    <section id="skills" class="section section-alt">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">04</span>
-                <h2 class="section-title">Technical <em>Skills</em></h2>
-                <p class="section-subtitle">Tools, frameworks, and domain knowledge</p>
-            </div>
-
-            <div class="card card-lg reveal">
-                <div class="skills-grid" id="skillsGrid"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Certifications -->
-    <section id="certifications" class="section">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">05</span>
-                <h2 class="section-title">My <em>Certifications</em></h2>
-                <p class="section-subtitle">Professional credentials and course completions</p>
-            </div>
-
-            <div class="cert-carousel-wrapper reveal">
-                <div class="cert-carousel" id="certCarousel">
-                    <div class="cert-card" data-index="0">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                                    <path d="M22 4L12 14.01l-3-3" />
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">JPMorgan Chase &amp; Co. Software Engineering</h3>
-                            <p class="cert-card-issuer">Forage · January 2026</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(0)">View Certificate</button>
-                        </div>
-                    </div>
-                    <div class="cert-card" data-index="1">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">IBM Data Science Professional Certificate (V3)</h3>
-                            <p class="cert-card-issuer">Coursera · November 2025</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(1)">View Certificate</button>
-                        </div>
-                    </div>
-                    <div class="cert-card" data-index="2">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M2 20h20M6 20V10l6-6 6 6v10"/>
-                                    <path d="M10 20v-5h4v5"/>
-                                    <circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/>
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">AWS Cloud Practitioner Essentials</h3>
-                            <p class="cert-card-issuer">AWS Training &amp; Certification · May 2026</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(2)">View Certificate</button>
-                        </div>
-                    </div>
-                    <div class="cert-card" data-index="3">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                                    <path d="M8 12l3 3 5-5"/>
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">Claude Code in Action</h3>
-                            <p class="cert-card-issuer">Anthropic · March 2026</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(3)">View Certificate</button>
-                        </div>
-                    </div>
-                    <div class="cert-card" data-index="4">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <path d="M8 10h8M8 14h5"/>
-                                    <circle cx="17" cy="14" r="2" fill="currentColor" stroke="none"/>
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">SAS Programming 1: Essentials</h3>
-                            <p class="cert-card-issuer">SAS · Credly Badge</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(4)">View Badge</button>
-                        </div>
-                    </div>
-                    <div class="cert-card" data-index="5">
-                        <div class="cert-card-inner">
-                            <div class="cert-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-                                </svg>
-                            </div>
-                            <h3 class="cert-card-title">SQL (Intermediate)</h3>
-                            <p class="cert-card-issuer">HackerRank · June 2026</p>
-                            <button class="cert-view-btn magnetic" onclick="openCertModal(5)">View Certificate</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="carousel-controls">
-                    <button class="carousel-btn magnetic" id="certPrev" aria-label="Previous certificate">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 18l-6-6 6-6" />
-                        </svg>
-                    </button>
-
-                    <div class="carousel-dots" id="certDots"></div>
-
-                    <button class="carousel-btn magnetic" id="certNext" aria-label="Next certificate">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 18l6-6-6-6" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="section section-alt">
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-num">06</span>
-                <h2 class="section-title">Let's <em>Connect</em></h2>
-                <p class="section-subtitle">Open to opportunities in Ireland and beyond</p>
-            </div>
-
-            <div class="contact-editorial reveal">
-                <div class="contact-editorial-inner">
-                    <p class="contact-lead">
-                        Looking for graduate or internship roles in Ireland. I'm happy to discuss my projects,
-                        background, or anything AI and data related.
-                    </p>
-
-                    <div class="contact-ctas">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=abinashprasana400@gmail.com"
-                            class="btn btn-primary magnetic">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-                            </svg>
-                            Send Email
-                        </a>
-                        <a href="assets/resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost magnetic">
-                            Download Resume ↗
-                        </a>
-                    </div>
-
-                    <div class="contact-link-grid">
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=abinashprasana400@gmail.com"
-                            class="contact-link-card magnetic">
-                            <span class="clc-k">Email</span>
-                            <span class="clc-v">abinashprasana400@gmail.com</span>
-                            <span class="clc-arrow">↗</span>
-                        </a>
-                        <a href="https://www.linkedin.com/in/abinash-prasana-s-2515b7221" target="_blank"
-                            rel="noopener" class="contact-link-card magnetic">
-                            <span class="clc-k">LinkedIn</span>
-                            <span class="clc-v">abinash-prasana-s-2515b7221</span>
-                            <span class="clc-arrow">↗</span>
-                        </a>
-                        <a href="https://github.com/abinashprasana" target="_blank" rel="noopener"
-                            class="contact-link-card magnetic">
-                            <span class="clc-k">GitHub</span>
-                            <span class="clc-v">github.com/abinashprasana</span>
-                            <span class="clc-arrow">↗</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Certificate Modal -->
-    <div class="cert-modal" id="certModal">
-        <div class="cert-modal-content">
-            <button class="cert-modal-close" onclick="closeCertModal()" aria-label="Close modal">×</button>
-            <div class="cert-modal-body" id="certModalBody">
-                <!-- Content injected by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container footer-inner">
-            <span>&copy; <span id="year"></span> Abinash Prasana Selvanathan</span>
-            <span class="muted mono-text">Built with HTML, CSS &amp; JavaScript</span>
-        </div>
+    <footer class="site-footer reveal">
+      <span>&copy; 2026 ABINASH PRASANA SELVANATHAN</span>
+      <span>BUILT WITH HTML, CSS &amp; JAVASCRIPT</span>
     </footer>
+  </section>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-            <path d="M22 4L12 14.01l-3-3" />
-        </svg>
-        <span id="toastMsg">Email copied!</span>
+  <!-- Intro splash -->
+  <div id="intro" aria-hidden="true">
+    <div class="intro-card">
+      <p class="i1">SPECIMEN: PORTFOLIO</p>
+      <p class="i2">SELVANATHAN, ABINASH PRASANA</p>
+      <p class="i3">FIELD: ARTIFICIAL INTELLIGENCE &middot; DUBLIN, IE</p>
+      <div class="intro-track"><div class="intro-fill"></div></div>
     </div>
+  </div>
 
-    <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+  <!-- Custom cursor -->
+  <div id="cursor-ring" aria-hidden="true"></div>
+  <div id="cursor-dot" aria-hidden="true"></div>
+
+  <script src="js/main.js"></script>
 </body>
-
 </html>
