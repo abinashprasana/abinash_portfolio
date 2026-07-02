@@ -80,6 +80,86 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  /* ---------- Count-up stats ---------- */
+  var statEls = document.querySelectorAll('.stat-num[data-count]');
+  function animateCount(el) {
+    var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+    if (reducedMotion) { el.textContent = String(target); return; }
+    var start = null, dur = 1400;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min(1, (ts - start) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = String(Math.round(target * eased));
+      if (p < 1) window.requestAnimationFrame(step);
+    }
+    window.requestAnimationFrame(step);
+  }
+  if ('IntersectionObserver' in window && statEls.length) {
+    var statIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          statIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    statEls.forEach(function (el) { statIo.observe(el); });
+  } else {
+    statEls.forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
+  }
+
+  /* ---------- Pointer parallax on hero bento tiles ---------- */
+  var bento = document.getElementById('hero-bento');
+  if (bento && finePointer && !reducedMotion) {
+    var tiles = bento.querySelectorAll('.tile');
+    var px = 0, py = 0, rafPending = false;
+    function applyParallax() {
+      rafPending = false;
+      tiles.forEach(function (t) {
+        var depth = parseFloat(t.getAttribute('data-parallax')) || 4;
+        t.style.transform = 'translate(' + (px * depth).toFixed(1) + 'px,' + (py * depth).toFixed(1) + 'px)';
+      });
+    }
+    bento.addEventListener('mousemove', function (e) {
+      var r = bento.getBoundingClientRect();
+      px = ((e.clientX - r.left) / r.width - 0.5) * 2 * -1;
+      py = ((e.clientY - r.top) / r.height - 0.5) * 2 * -1;
+      if (!rafPending) { rafPending = true; window.requestAnimationFrame(applyParallax); }
+    }, { passive: true });
+    bento.addEventListener('mouseleave', function () {
+      px = 0; py = 0;
+      if (!rafPending) { rafPending = true; window.requestAnimationFrame(applyParallax); }
+    });
+  }
+
+  /* ---------- Copy email + toast ---------- */
+  var copyBtn = document.getElementById('copy-email');
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var email = copyBtn.getAttribute('data-email') || '';
+      function done() {
+        if (!toast) return;
+        toast.classList.add('show');
+        if (toastTimer) window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () { toast.classList.remove('show'); }, 2200);
+      }
+      function legacyCopy() {
+        var ta = document.createElement('textarea');
+        ta.value = email; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (err) {}
+        ta.remove();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(done, legacyCopy);
+      } else {
+        legacyCopy();
+      }
+    });
+  }
+
   /* ---------- Frost motes: slow-rising particles, like silt in still water ---------- */
   var canvas = document.getElementById('motes');
   if (canvas && !reducedMotion && canvas.getContext) {
