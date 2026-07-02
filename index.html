@@ -19,12 +19,14 @@
 </head>
 <body>
 
-  <!-- Background layers: grid, drifting light caustics, aurora blobs, frost motes -->
+  <!-- Background layers: grid, drifting light caustics, aurora blobs, water canvas -->
   <div class="bg-grid" aria-hidden="true"></div>
-  <div class="bg-caustics" aria-hidden="true"></div>
-  <div class="blob blob-a" aria-hidden="true"></div>
-  <div class="blob blob-b" aria-hidden="true"></div>
-  <div class="blob blob-c" aria-hidden="true"></div>
+  <div class="bg-drift" aria-hidden="true">
+    <div class="bg-caustics"></div>
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+  </div>
   <canvas id="motes" aria-hidden="true"></canvas>
 
   <!-- Scroll progress -->
@@ -65,7 +67,7 @@
     <div class="hero-grid reveal">
       <div class="hero-abstract glass">
         <p class="abstract-label">PROFILE</p>
-        <p class="body">MSc Artificial Intelligence student at Dublin Business School, with earlier experience at Deloitte supporting healthcare IT systems in production. I build data and software projects that aim to be practical and explainable, working end to end from SQL and dashboards to deep learning models. Every project below solves a real problem and comes with results you can measure.</p>
+        <p class="body">MSc Artificial Intelligence student at Dublin Business School, with earlier experience at Deloitte supporting healthcare IT systems in production. I build data and ML projects that aim to be practical and explainable, working end to end from SQL schemas and dashboards to deep learning models. Each project below comes with a method and results you can measure.</p>
         <div class="btn-row">
           <a class="btn btn-primary" href="#projects">View projects &darr;</a>
           <a class="btn btn-glass" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>

@@ -31,6 +31,7 @@ body {
   --header-bg: rgba(7,13,21,.55);
   --mote: 168,220,255;
   --spec: rgba(178,228,255,.11);
+  --edge-hi: rgba(220,245,255,.4); --edge-lo: rgba(185,170,255,.22);
 }
 [data-theme="light"] {
   --bg: #e9f1f7; --text: #13232f; --text-mut: rgba(19,35,47,.8); --text-dim: rgba(19,35,47,.52);
@@ -46,9 +47,10 @@ body {
   --header-bg: rgba(233,241,247,.62);
   --mote: 20,110,170;
   --spec: rgba(255,255,255,.5);
+  --edge-hi: rgba(255,255,255,.95); --edge-lo: rgba(106,91,208,.3);
 }
 
-/* ---------- Shared glass recipe + liquid specular hover ---------- */
+/* ---------- Shared glass recipe: luminous edge, specular + sheen ---------- */
 .glass {
   position: relative;
   background: linear-gradient(160deg, var(--glass-hi), var(--glass-lo));
@@ -57,13 +59,30 @@ body {
   backdrop-filter: blur(18px) saturate(1.15);
   -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
+/* luminous gradient edge — a light reflection running along the glass rim */
+.glass::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+  background: linear-gradient(160deg, var(--edge-hi), transparent 28%, transparent 62%, var(--edge-lo));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+/* cursor specular + hover sheen sweep */
 .glass::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--spec), transparent 65%);
-  opacity: 0; transition: opacity .45s ease;
+  background:
+    radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), var(--spec), transparent 65%),
+    linear-gradient(115deg, transparent 42%, rgba(255,255,255,.09) 49%, rgba(190,235,255,.14) 52%, transparent 61%);
+  background-size: 100% 100%, 300% 100%;
+  background-position: 0 0, 135% 0;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity .45s ease, background-position 1.2s cubic-bezier(.22,.61,.21,1);
 }
 @media (hover: hover) and (pointer: fine) {
-  .glass:hover::after { opacity: 1; }
+  .glass:hover::after { opacity: 1; background-position: 0 0, -70% 0; }
 }
 .mono { font-family: 'IBM Plex Mono', monospace; }
 .grotesk { font-family: 'Space Grotesk', sans-serif; }
@@ -81,6 +100,9 @@ a:focus-visible, button:focus-visible {
   mask-image: radial-gradient(ellipse 120% 90% at 50% 8%, #000 30%, transparent 100%);
   -webkit-mask-image: radial-gradient(ellipse 120% 90% at 50% 8%, #000 30%, transparent 100%);
 }
+
+/* pointer-driven drift wrapper: the whole light field sways with the mouse */
+.bg-drift { position: fixed; inset: 0; z-index: 0; pointer-events: none; will-change: transform; }
 
 /* underwater light drift */
 .bg-caustics {
@@ -258,7 +280,10 @@ section#contact { padding-bottom: 64px; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 9px; margin-top: 4px; padding: 8px 15px;
-  border-radius: 999px; border: 1px dashed var(--dash);
+  border-radius: 999px; border: 1px solid var(--glass-brd);
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  box-shadow: inset 0 1px 0 var(--glass-inset);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: var(--text-mut);
 }
 .chip-dot {
@@ -277,7 +302,9 @@ section#contact { padding-bottom: 64px; }
 
 .copy-email {
   display: inline-flex; align-items: center; gap: 9px; padding: 10px 14px; border-radius: 10px;
-  border: 1px dashed var(--dash); background: transparent; cursor: pointer;
+  border: 1px solid var(--glass-brd); cursor: pointer;
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  box-shadow: inset 0 1px 0 var(--glass-inset);
   color: var(--text-mut); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   transition: color .25s ease, border-color .25s ease;
 }
@@ -292,13 +319,14 @@ section#contact { padding-bottom: 64px; }
 .social-btn svg { width: 17px; height: 17px; }
 .social-btn:hover { color: var(--acc); border-color: var(--acc-line); transform: translateY(-2px); }
 
-/* ---------- Skills marquee ---------- */
+/* ---------- Skills marquee (glass strip) ---------- */
 .marquee {
   position: relative; z-index: 1; overflow: hidden;
   max-width: min(1100px, calc(100% - 64px)); margin: -52px auto 0;
-  border-top: 1px dashed var(--dash); border-bottom: 1px dashed var(--dash);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  border-radius: 14px; border: 1px solid var(--glass-brd);
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  box-shadow: inset 0 1px 0 var(--glass-inset);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 .marquee-track {
   display: flex; align-items: center; gap: 26px; width: max-content; padding: 14px 0;
@@ -456,12 +484,15 @@ section#contact { padding-bottom: 64px; }
 .contact-links { display: flex; flex-direction: column; gap: 12px; font-family: 'IBM Plex Mono', monospace; }
 .contact-links a {
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
-  padding: 15px 20px; border-radius: 12px; border: 1px dashed var(--dash);
+  padding: 15px 20px; border-radius: 12px; border: 1px solid var(--glass-brd);
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  box-shadow: inset 0 1px 0 var(--glass-inset);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   color: var(--text-mut); font-size: 12px; text-decoration: none;
-  transition: border-color .25s ease, color .25s ease, background-color .25s ease, transform .25s ease;
+  transition: border-color .25s ease, color .25s ease, transform .25s ease;
 }
 .contact-links a span:last-child { text-align: right; overflow-wrap: anywhere; }
-.contact-links a:hover { border-color: var(--acc-line); color: var(--acc); background: var(--acc-soft); transform: translateX(3px); }
+.contact-links a:hover { border-color: var(--acc-line); color: var(--acc); transform: translateX(3px); }
 .site-footer {
   display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
   margin-top: 72px; padding-top: 22px; border-top: 1px solid var(--line);

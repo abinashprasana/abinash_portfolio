@@ -136,13 +136,16 @@
     });
   }
 
-  /* ---------- Frost motes: slow-rising particles, like silt in still water ---------- */
+  /* ---------- Water canvas: rising motes + a luminous wake that trails the cursor ---------- */
   var canvas = document.getElementById('motes');
   if (canvas && !reducedMotion && canvas.getContext) {
     var ctx = canvas.getContext('2d');
     var motes = [];
     var W = 0, H = 0;
     var running = true;
+    var mouseX = -1000, mouseY = -1000;
+    var wake = { x: -1000, y: -1000 };
+    var wake2 = { x: -1000, y: -1000 };
 
     function moteColor() {
       var v = getComputedStyle(document.documentElement).getPropertyValue('--mote').trim();
@@ -161,6 +164,7 @@
       return {
         x: Math.random() * W,
         y: anywhere ? Math.random() * H : H + 6,
+        ox: 0, oy: 0,
         r: 0.6 + Math.random() * 1.7,
         vy: 0.08 + Math.random() * 0.22,
         drift: 0.5 + Math.random() * 1.6,
@@ -172,31 +176,96 @@
     window.addEventListener('resize', sizeCanvas);
     sizeCanvas();
 
+    if (finePointer) {
+      window.addEventListener('mousemove', function (e) {
+        mouseX = e.clientX; mouseY = e.clientY;
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', function () {
+        mouseX = -1000; mouseY = -1000;
+      });
+    }
+
     document.addEventListener('visibilitychange', function () {
       running = !document.hidden;
-      if (running) window.requestAnimationFrame(drawMotes);
+      if (running) window.requestAnimationFrame(drawWater);
     });
 
+    function glow(x, y, radius, alpha, col) {
+      var g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, 'rgba(' + col + ',' + alpha + ')');
+      g.addColorStop(1, 'rgba(' + col + ',0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     var t0 = performance.now();
-    function drawMotes(now) {
+    function drawWater(now) {
       if (!running) return;
       var t = (now - t0) / 1000;
-      ctx.clearRect(0, 0, W, H);
       var col = moteColor();
+
+      /* fade the previous frame instead of clearing: everything leaves a watery trail */
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,0.16)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'source-over';
+
+      /* cursor wake: two lagging lights, like light bending through stirred water */
+      if (finePointer && mouseX > -500) {
+        wake.x += (mouseX - wake.x) * 0.055;
+        wake.y += (mouseY - wake.y) * 0.055;
+        wake2.x += (mouseX - wake2.x) * 0.12;
+        wake2.y += (mouseY - wake2.y) * 0.12;
+        var wobX = Math.sin(t * 1.7) * 7, wobY = Math.cos(t * 1.3) * 7;
+        glow(wake.x + wobX, wake.y + wobY, 120, 0.05, col);
+        glow(wake2.x, wake2.y, 60, 0.045, col);
+      }
+
+      /* motes: rise slowly, twinkle, and get pushed aside near the cursor */
       for (var i = 0; i < motes.length; i++) {
         var m = motes[i];
         m.y -= m.vy;
-        var x = m.x + Math.sin(t * 0.5 + m.phase) * m.drift * 8;
         if (m.y < -8) motes[i] = m = newMote(false);
+        var x = m.x + Math.sin(t * 0.5 + m.phase) * m.drift * 8;
+
+        if (finePointer && mouseX > -500) {
+          var dx = x + m.ox - mouseX, dy = m.y + m.oy - mouseY;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 140 && d > 0.1) {
+            var push = (1 - d / 140) * 2.2;
+            m.ox += (dx / d) * push;
+            m.oy += (dy / d) * push;
+          }
+        }
+        m.ox *= 0.94; m.oy *= 0.94;
+
         var twinkle = 0.5 + 0.5 * Math.sin(t * m.tw * 2 + m.phase);
         ctx.beginPath();
-        ctx.arc(x, m.y, m.r, 0, Math.PI * 2);
+        ctx.arc(x + m.ox, m.y + m.oy, m.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(' + col + ',' + (0.10 + twinkle * 0.28).toFixed(3) + ')';
         ctx.fill();
       }
-      window.requestAnimationFrame(drawMotes);
+      window.requestAnimationFrame(drawWater);
     }
-    window.requestAnimationFrame(drawMotes);
+    window.requestAnimationFrame(drawWater);
+  }
+
+  /* ---------- Background drift: the light field sways toward the cursor ---------- */
+  var driftLayer = document.querySelector('.bg-drift');
+  if (driftLayer && finePointer && !reducedMotion) {
+    var dTx = 0, dTy = 0, dX = 0, dY = 0;
+    window.addEventListener('mousemove', function (e) {
+      dTx = (e.clientX / window.innerWidth - 0.5) * 44;
+      dTy = (e.clientY / window.innerHeight - 0.5) * 30;
+    }, { passive: true });
+    (function driftLoop() {
+      dX += (dTx - dX) * 0.03;
+      dY += (dTy - dY) * 0.03;
+      driftLayer.style.transform = 'translate3d(' + dX.toFixed(2) + 'px,' + dY.toFixed(2) + 'px,0)';
+      window.requestAnimationFrame(driftLoop);
+    })();
   }
 
   /* ---------- Click ripple: two expanding water rings ---------- */
