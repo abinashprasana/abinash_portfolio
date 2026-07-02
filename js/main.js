@@ -269,19 +269,35 @@
   }
 
   /* ---------- Click ripple: two expanding water rings ---------- */
+  function spawnRipple(x, y, size, extraClass) {
+    var r = document.createElement('span');
+    r.className = 'ripple' + (extraClass ? ' ' + extraClass : '');
+    r.style.left = x + 'px';
+    r.style.top = y + 'px';
+    r.style.width = size + 'px';
+    r.style.height = size + 'px';
+    document.body.appendChild(r);
+    window.setTimeout(function () { r.remove(); }, 1150);
+  }
   if (!reducedMotion) {
     window.addEventListener('pointerdown', function (e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      for (var i = 0; i < 2; i++) {
-        var r = document.createElement('span');
-        r.className = 'ripple' + (i ? ' r2' : '');
-        var size = i ? 190 : 130;
-        r.style.left = e.clientX + 'px';
-        r.style.top = e.clientY + 'px';
-        r.style.width = size + 'px';
-        r.style.height = size + 'px';
-        document.body.appendChild(r);
-        window.setTimeout(function (el) { return function () { el.remove(); }; }(r), 1100);
+      spawnRipple(e.clientX, e.clientY, 130, '');
+      spawnRipple(e.clientX, e.clientY, 190, 'r2');
+    }, { passive: true });
+  }
+
+  /* ---------- Micro-ripples trail the moving pointer, like a finger through water ---------- */
+  if (finePointer && !reducedMotion) {
+    var rLastX = null, rLastY = 0, rDist = 0, rLastSpawn = 0;
+    window.addEventListener('mousemove', function (e) {
+      if (rLastX === null) { rLastX = e.clientX; rLastY = e.clientY; return; }
+      rDist += Math.hypot(e.clientX - rLastX, e.clientY - rLastY);
+      rLastX = e.clientX; rLastY = e.clientY;
+      var now = performance.now();
+      if (rDist > 120 && now - rLastSpawn > 150) {
+        rDist = 0; rLastSpawn = now;
+        spawnRipple(e.clientX, e.clientY, 40 + Math.random() * 26, 'ripple-move');
       }
     }, { passive: true });
   }
