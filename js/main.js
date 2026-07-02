@@ -120,10 +120,16 @@
 
   var certModal = document.getElementById('cert-modal');
   var certModalBody = document.getElementById('cert-modal-body');
+  var certModalCloseBtn = certModal ? certModal.querySelector('.cm-close') : null;
+  var certModalLastFocus = null;
   function closeCertModal() {
     if (!certModal) return;
     certModal.classList.remove('open');
     document.body.classList.remove('modal-open');
+    if (certModalLastFocus && certModalLastFocus.focus) {
+      certModalLastFocus.focus();
+      certModalLastFocus = null;
+    }
   }
   function openCertModal(i) {
     var cert = CERTS[i];
@@ -144,8 +150,10 @@
     full.target = '_blank'; full.rel = 'noopener';
     full.textContent = cert.verify ? 'Verify certificate ↗' : 'Open full view ↗';
     certModalBody.appendChild(full);
+    certModalLastFocus = document.activeElement;
     certModal.classList.add('open');
     document.body.classList.add('modal-open');
+    if (certModalCloseBtn) certModalCloseBtn.focus();
   }
   if (certModal) {
     document.querySelectorAll('.certs-grid .cert-card').forEach(function (card, i) {
@@ -157,10 +165,19 @@
     certModal.addEventListener('click', function (e) {
       if (e.target === certModal) closeCertModal();
     });
-    var closeBtn = certModal.querySelector('.cm-close');
-    if (closeBtn) closeBtn.addEventListener('click', closeCertModal);
+    if (certModalCloseBtn) certModalCloseBtn.addEventListener('click', closeCertModal);
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeCertModal();
+      if (e.key === 'Tab' && certModal.classList.contains('open')) {
+        var focusables = certModal.querySelectorAll('button, a[href]');
+        if (!focusables.length) return;
+        var first = focusables[0], last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
     });
   }
 
@@ -189,6 +206,7 @@
     var pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
     if (depthEl) depthEl.textContent = String(Math.round(pct * 100)).padStart(3, '0') + '%';
     if (barEl) barEl.style.transform = 'scaleX(' + pct.toFixed(4) + ')';
+    document.documentElement.style.setProperty('--depth', pct.toFixed(3));
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -222,6 +240,34 @@
     statEls.forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
   }
 
+  /* ---------- Magnetic pull on buttons ---------- */
+  if (finePointer && !reducedMotion) {
+    document.querySelectorAll('.btn-primary, .btn-glass, .social-btn, .header-resume, #theme-toggle').forEach(function (el) {
+      el.addEventListener('mousemove', function (e) {
+        var r = el.getBoundingClientRect();
+        var mx = (e.clientX - (r.left + r.width / 2)) * 0.22;
+        var my = (e.clientY - (r.top + r.height / 2)) * 0.3;
+        mx = Math.max(-6, Math.min(6, mx));
+        my = Math.max(-5, Math.min(5, my));
+        el.style.transform = 'translate(' + mx.toFixed(1) + 'px,' + my.toFixed(1) + 'px)';
+      }, { passive: true });
+      el.addEventListener('mouseleave', function () { el.style.transform = ''; });
+    });
+  }
+
+  /* ---------- Tilt on the hero photo ---------- */
+  var heroPhoto = document.querySelector('.hero-photo');
+  if (heroPhoto && finePointer && !reducedMotion) {
+    heroPhoto.style.transition = 'transform .45s cubic-bezier(.22,.61,.21,1)';
+    heroPhoto.addEventListener('mousemove', function (e) {
+      var r = heroPhoto.getBoundingClientRect();
+      var rx = ((e.clientY - r.top) / r.height - 0.5) * -6;
+      var ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
+      heroPhoto.style.transform = 'perspective(700px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+    }, { passive: true });
+    heroPhoto.addEventListener('mouseleave', function () { heroPhoto.style.transform = ''; });
+  }
+
   /* ---------- Copy email + toast ---------- */
   var copyBtn = document.getElementById('copy-email');
   var toast = document.getElementById('toast');
@@ -230,6 +276,8 @@
     copyBtn.addEventListener('click', function () {
       var email = copyBtn.getAttribute('data-email') || '';
       function done() {
+        copyBtn.classList.add('copied');
+        window.setTimeout(function () { copyBtn.classList.remove('copied'); }, 2200);
         if (!toast) return;
         toast.classList.add('show');
         if (toastTimer) window.clearTimeout(toastTimer);
@@ -439,15 +487,27 @@
       if (dot) dot.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
     }, { passive: true });
 
+    var labelEl = document.getElementById('cursor-label');
+    function cursorTargetScale(e) {
+      var el = e.target && e.target.closest ? e.target : null;
+      var lab = '';
+      if (el) {
+        if (el.closest('.cert-card')) lab = 'OPEN';
+        else if (el.closest('.copy-email')) lab = 'COPY';
+        else if (el.closest('.pc-link.pc-live')) lab = 'LIVE';
+      }
+      if (labelEl) labelEl.textContent = lab;
+      if (ring) ring.classList.toggle('labeled', !!lab);
+      var t = el && el.closest('a, button');
+      return lab ? 2.5 : (t ? 1.9 : 1);
+    }
     window.addEventListener('mouseover', function (e) {
-      var t = e.target && e.target.closest ? e.target.closest('a, button') : null;
-      tscale = t ? 1.9 : 1;
+      tscale = cursorTargetScale(e);
     }, { passive: true });
 
     window.addEventListener('mousedown', function () { tscale = 0.7; }, { passive: true });
     window.addEventListener('mouseup', function (e) {
-      var t = e.target && e.target.closest ? e.target.closest('a, button') : null;
-      tscale = t ? 1.9 : 1;
+      tscale = cursorTargetScale(e);
     }, { passive: true });
 
     document.documentElement.addEventListener('mouseleave', function () {
@@ -460,6 +520,7 @@
       cy += (ty - cy) * 0.16;
       scale += (tscale - scale) * 0.18;
       if (ring) ring.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+      if (labelEl) labelEl.style.transform = 'scale(' + (1 / Math.max(scale, 0.1)).toFixed(3) + ')';
       window.requestAnimationFrame(loop);
     })();
   }

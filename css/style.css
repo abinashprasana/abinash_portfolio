@@ -16,9 +16,17 @@ body {
 
 ::selection { background: var(--acc-soft); color: var(--text); }
 
+/* the water darkens as you scroll deeper (driven by --depth from JS) */
+body::after {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--depth-tint);
+  opacity: calc(var(--depth, 0) * var(--depth-fade));
+}
+
 /* ---------- Themes ---------- */
 :root, [data-theme="dark"] {
-  --bg: #070d15; --text: #eaf4fb; --text-mut: rgba(234,244,251,.76); --text-dim: rgba(196,226,246,.52);
+  --bg: #070d15; --text: #eaf4fb; --text-mut: rgba(234,244,251,.78); --text-dim: rgba(196,226,246,.58);
+  --depth-tint: #010509; --depth-fade: .34;
   --acc: #8fd9ff; --acc-ink: #061019; --acc-soft: rgba(143,217,255,.14); --acc-line: rgba(143,217,255,.38);
   --acc2: #b9aaff; --acc2-line: rgba(185,170,255,.34);
   --grid: rgba(143,217,255,.05);
@@ -34,7 +42,8 @@ body {
   --edge-hi: rgba(224,246,255,.52); --edge-lo: rgba(185,170,255,.28);
 }
 [data-theme="light"] {
-  --bg: #e9f1f7; --text: #13232f; --text-mut: rgba(19,35,47,.8); --text-dim: rgba(19,35,47,.52);
+  --bg: #e9f1f7; --text: #13232f; --text-mut: rgba(19,35,47,.82); --text-dim: rgba(19,35,47,.68);
+  --depth-tint: #28495f; --depth-fade: .16;
   --acc: #0f7cb8; --acc-ink: #f3fafe; --acc-soft: rgba(15,124,184,.11); --acc-line: rgba(15,124,184,.42);
   --acc2: #6a5bd0; --acc2-line: rgba(106,91,208,.36);
   --grid: rgba(30,100,150,.07);
@@ -196,16 +205,19 @@ a:focus-visible, button:focus-visible {
   background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
   color: var(--text); font-family: 'IBM Plex Mono', monospace;
   font-size: 10.5px; letter-spacing: .1em; white-space: nowrap;
-  transition: border-color .25s ease, color .25s ease;
+  transition: border-color .25s ease, color .25s ease, transform .3s cubic-bezier(.22,.61,.21,1);
 }
 #theme-toggle:hover { border-color: var(--acc-line); color: var(--acc); }
+#theme-toggle:active { transform: scale(.94); }
 .header-resume {
   padding: 5px 12px; border-radius: 8px;
   background: linear-gradient(135deg, var(--acc), var(--acc2));
   color: var(--acc-ink);
   font-weight: 600; font-size: 10.5px; letter-spacing: .1em; text-decoration: none; white-space: nowrap;
   box-shadow: 0 4px 16px var(--acc-soft);
+  transition: transform .3s cubic-bezier(.22,.61,.21,1);
 }
+.header-resume:active { transform: scale(.94); }
 
 /* hamburger: appears when the inline nav is hidden */
 #burger {
@@ -285,6 +297,12 @@ section#contact { padding-bottom: 64px; }
   font-size: clamp(44px, 7.4vw, 88px); line-height: 1.02; letter-spacing: -.035em; color: var(--text);
 }
 .hero-title .lens .lens-glass { inset: -.11em -.22em; border-radius: .28em; }
+/* name surfaces word by word as the intro fog clears */
+.hero-title .w { display: inline-block; animation: surface .85s cubic-bezier(.22,.61,.21,1) both; }
+.hero-title .w:nth-of-type(1) { animation-delay: 1.9s; }
+.hero-title .w:nth-of-type(2) { animation-delay: 2.08s; }
+.hero-title .w:nth-of-type(3) { animation-delay: 2.3s; }
+@keyframes surface { from { opacity: 0; transform: translateY(26px); } }
 .hero-role { margin: 0 0 22px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: .06em; color: var(--text-mut); }
 #role-word { color: var(--acc); }
 .caret {
@@ -347,6 +365,10 @@ section#contact { padding-bottom: 64px; }
 }
 .copy-email:hover { color: var(--acc); border-color: var(--acc-line); }
 .copy-email svg { width: 14px; height: 14px; flex-shrink: 0; }
+.copy-email .ic-check { display: none; color: var(--acc); }
+.copy-email.copied { color: var(--acc); border-color: var(--acc-line); }
+.copy-email.copied .ic-copy { display: none; }
+.copy-email.copied .ic-check { display: inline; }
 .social-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .social-btn {
   width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px;
@@ -355,6 +377,7 @@ section#contact { padding-bottom: 64px; }
 }
 .social-btn svg { width: 17px; height: 17px; }
 .social-btn:hover { color: var(--acc); border-color: var(--acc-line); transform: translateY(-2px); }
+.social-btn:active { transform: scale(.92); }
 
 /* ---------- Skills marquee (glass strip) ---------- */
 .marquee {
@@ -442,6 +465,7 @@ body.modal-open { overflow: hidden; }
   transform: skewX(-16deg); transition: left .55s ease; pointer-events: none;
 }
 .btn:hover { transform: translateY(-2px); }
+.btn:active { transform: scale(.97); }
 .btn:hover::before { left: 130%; }
 .btn-primary {
   background: linear-gradient(135deg, var(--acc), var(--acc2));
@@ -540,6 +564,19 @@ body.modal-open { overflow: hidden; }
   border-color: var(--acc-line); color: var(--acc); background: var(--acc-soft);
   transform: translateY(-2px);
 }
+/* chips pop in one after another when their card reveals */
+.skill-card.reveal:not(.in) .skill-chips span { opacity: 0; }
+.skill-card.in .skill-chips span { animation: chipIn .55s cubic-bezier(.22,.61,.21,1) both; }
+.skill-card.in .skill-chips span:nth-child(1) { animation-delay: .05s; }
+.skill-card.in .skill-chips span:nth-child(2) { animation-delay: .1s; }
+.skill-card.in .skill-chips span:nth-child(3) { animation-delay: .15s; }
+.skill-card.in .skill-chips span:nth-child(4) { animation-delay: .2s; }
+.skill-card.in .skill-chips span:nth-child(5) { animation-delay: .25s; }
+.skill-card.in .skill-chips span:nth-child(6) { animation-delay: .3s; }
+.skill-card.in .skill-chips span:nth-child(7) { animation-delay: .35s; }
+.skill-card.in .skill-chips span:nth-child(8) { animation-delay: .4s; }
+.skill-card.in .skill-chips span:nth-child(9) { animation-delay: .45s; }
+@keyframes chipIn { from { opacity: 0; transform: translateY(10px) scale(.92); } }
 
 /* ---------- Certifications ---------- */
 .certs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -646,7 +683,14 @@ body.modal-open { overflow: hidden; }
   box-shadow: inset 0 1px 0 var(--glass-inset), 0 0 18px var(--acc-soft);
   pointer-events: none; z-index: 9998; will-change: transform;
   transform: translate(-100px, -100px);
+  display: flex; align-items: center; justify-content: center;
 }
+#cursor-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: .06em;
+  color: var(--acc); opacity: 0; transition: opacity .25s ease;
+  user-select: none; white-space: nowrap;
+}
+#cursor-ring.labeled #cursor-label { opacity: 1; }
 #cursor-dot {
   position: fixed; top: 0; left: 0; width: 6px; height: 6px; margin: -3px 0 0 -3px;
   border-radius: 50%; background: var(--acc); box-shadow: 0 0 10px var(--acc-line);
@@ -708,6 +752,11 @@ body.modal-open { overflow: hidden; }
   .hero-stats { flex-direction: row; align-items: center; justify-content: space-around; }
   .copy-email { max-width: 100%; overflow-wrap: anywhere; }
   .marquee { max-width: calc(100% - 40px); margin-top: -28px; }
+  /* lighter blur on phones: same look, much cheaper to composite */
+  .glass, .header-bar, .mobile-nav, .marquee, .contact-links a {
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  }
   .about-grid, .contact-grid, .skills-grid { grid-template-columns: 1fr; }
   .certs-grid { grid-template-columns: 1fr; }
   .pc-head { flex-wrap: wrap; row-gap: 4px; }
@@ -721,6 +770,19 @@ body.modal-open { overflow: hidden; }
   .hero-photo img { width: 100%; height: auto; aspect-ratio: 1; }
   .about-body, .contact-card { padding: 24px 22px; }
   .exp-card { padding: 22px 22px; }
+}
+
+/* ---------- Reduced transparency ---------- */
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .header-bar, .mobile-nav, .marquee, .chip, .copy-email, .contact-links a,
+  #theme-toggle, .btn-glass, .intro-card, .cm-close, #toast, #cursor-ring {
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  .glass, .header-bar, .mobile-nav, .marquee, .chip, .copy-email, .contact-links a, .intro-card {
+    background: var(--bg);
+  }
+  #intro { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--bg); }
+  #cert-modal { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 9, 15, .88); }
 }
 
 /* ---------- Reduced motion ---------- */
