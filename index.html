@@ -51,8 +51,19 @@
         <span class="depth-label">SCROLL <span id="depth-readout">000%</span></span>
         <button id="theme-toggle" type="button">THEME &#9656; DARK</button>
         <a class="header-resume" href="assets/resume.pdf" target="_blank" rel="noopener">RESUME</a>
+        <button id="burger" type="button" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
+    <nav class="mobile-nav" id="mobile-nav" hidden>
+      <a href="#about">ABOUT</a>
+      <a href="#experience">WORK</a>
+      <a href="#projects">PROJECTS</a>
+      <a href="#skills">SKILLS</a>
+      <a href="#certifications">CERTS</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
   </header>
 
   <!-- ============ HERO ============ -->
@@ -140,7 +151,7 @@
       <div class="about-body glass reveal">
         <p>I am an MSc Artificial Intelligence student at Dublin Business School, graduating in September 2026. My focus during the MSc has been machine learning, NLP and data systems, building models and pipelines end to end across a range of problems.</p>
         <p>Before the MSc I spent over a year at Deloitte as an Associate Analyst, supporting HIPAA-compliant healthcare IT systems in production. That work gave me a solid grounding in regulated environments where accuracy and documentation genuinely matter. I enjoyed it, but I wanted to push further technically, so I moved to Ireland for the MSc.</p>
-        <p>I am based in Dublin and open to graduate roles from September 2026 across AI, data, software engineering and IT — in any sector where practical, well-documented systems matter. The combination of production support experience and hands-on ML work travels well between industries.</p>
+        <p>I am based in Dublin and open to graduate roles and internships from September 2026 — in any sector where practical, well-documented systems matter. The combination of production support experience and hands-on ML work travels well between industries.</p>
       </div>
       <div class="about-side">
         <div class="fact-card glass reveal">
@@ -154,9 +165,9 @@
           <p class="fc-sub">Deloitte</p>
         </div>
         <div class="fact-card glass reveal">
-          <p class="fc-label">OPEN TO</p>
-          <p class="fc-title">AI &middot; Data &middot; Software &middot; IT</p>
-          <p class="fc-sub">Roles across sectors, from Sept 2026</p>
+          <p class="fc-label">AVAILABILITY</p>
+          <p class="fc-title">Graduate roles &amp; internships</p>
+          <p class="fc-sub">Dublin &middot; from September 2026</p>
         </div>
       </div>
     </div>
@@ -214,89 +225,106 @@
 
     <div class="exp-list">
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/irish-banking-churn" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">01 &middot; EXPLAINABLE ML</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link pc-live" href="https://abinashprasana-irish-banking-churn-app-aidovf.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link" href="https://github.com/abinashprasana/irish-banking-churn" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>Irish Banking Customer Churn Predictor</h3>
           <p>An explainable ML system predicting retail banking customer churn, built around the KBC Bank Ireland and Ulster Bank market exits of 2022 and 2023. Uses XGBoost with SMOTEENN class balancing, SHAP explainability and DICE counterfactual explanations aligned with EU AI Act Article 86, presented in a five-tab interactive Streamlit dashboard.</p>
           <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>SMOTEENN</span><span>SHAP</span><span>DICE</span><span>Streamlit</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/clinical-rag-mimic" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">02 &middot; CLINICAL NLP / RAG</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link" href="https://github.com/abinashprasana/clinical-rag-mimic" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>Clinical RAG, medical Q&amp;A on clinical notes</h3>
           <p>A RAG pipeline for clinical question answering built on de-identified MIMIC-IV discharge notes, accessed through CITI ethics training and a PhysioNet data use agreement. Achieves 70% accuracy at a mean latency of 10.91 seconds using section-aware chunking, FAISS vector search and Flan-T5, with a hard refusal when no relevant context is retrieved.</p>
           <div class="pc-tags"><span>Python</span><span>FAISS</span><span>Flan-T5</span><span>Flask</span><span>Clinical NLP</span><span>RAG</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/dail-llm" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">03 &middot; TRANSFORMER FROM SCRATCH</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link pc-live" href="https://abinashprasana-dail-llm-dail-llmappstreamlit-app-um65t7.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link" href="https://github.com/abinashprasana/dail-llm" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>D&aacute;il LLM, an Irish parliamentary transformer</h3>
           <p>A character-level transformer trained from scratch on 4.4 million D&aacute;il &Eacute;ireann parliamentary speeches spanning 1919 to 2013, with the full decoder-only architecture built in PyTorch using no pre-trained weights. The 3.2-million-parameter model achieved perplexity 4.07 and a repetition score of 0.0000, with a four-tab Streamlit dashboard and attention visualisation heatmaps.</p>
           <div class="pc-tags"><span>Python</span><span>PyTorch</span><span>Streamlit</span><span>Transformers</span><span>NLP</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/no2-forecasting-deep-learning" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">04 &middot; TIME SERIES / DEEP LEARNING</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link" href="https://github.com/abinashprasana/no2-forecasting-deep-learning" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>NO&#8322; Forecasting, deep learning for air quality</h3>
           <p>A benchmarking study comparing LSTM, GRU and temporal convolutional network models for hourly NO&#8322; forecasting on real UK DEFRA sensor data from London's Marylebone Road. The best LSTM model achieved RMSE 6.09 &micro;g/m&sup3;, outperforming GRU by around 20%, with a Flask dashboard for comparing predictions against actuals across time windows.</p>
           <div class="pc-tags"><span>Python</span><span>TensorFlow</span><span>LSTM</span><span>GRU</span><span>TCN</span><span>Flask</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/steam-recommender-xai" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">05 &middot; RECOMMENDERS / EXPLAINABLE AI</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link" href="https://github.com/abinashprasana/steam-recommender-xai" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>Steam Recommender, explainable AI for games</h3>
           <p>A hybrid recommendation system combining Bayesian Personalised Ranking with content-based filtering on 31,799 real Steam interactions, extended with SHAP and LIME to explain individual recommendations. Achieved NDCG@10 of 0.5203 and MAP@10 of 0.4502, with popularity bias analysis and two mitigation strategies surfaced through a Flask dashboard.</p>
           <div class="pc-tags"><span>Python</span><span>BPR</span><span>SHAP</span><span>LIME</span><span>Flask</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/payments-analytics" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">06 &middot; SQL / PAYMENTS ANALYTICS</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link" href="https://github.com/abinashprasana/payments-analytics" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>Payments Analytics, PostgreSQL on transactions</h3>
           <p>A six-table PostgreSQL schema modelling payments architecture across 5,000 customers, 800 merchants and 80,000 synthetic transactions, with eight progressive SQL files covering window functions, CTEs and cohort analysis. The analysis shows high-risk merchants carry roughly four times the fraud rate of low-risk merchants, presented in a four-tab Streamlit dashboard with Plotly visualisations.</p>
           <div class="pc-tags"><span>PostgreSQL 15</span><span>SQL</span><span>psycopg2</span><span>Streamlit</span><span>Plotly</span></div>
         </div>
-      </a>
+      </div>
 
-      <a class="project-card glass reveal" href="https://github.com/abinashprasana/riskradar-it-incident-sla-risk" target="_blank" rel="noopener">
+      <div class="project-card glass reveal">
         <div class="pc-head">
           <span class="pc-code">07 &middot; CLASSIFICATION / IT OPERATIONS</span>
-          <span class="pc-gh">VIEW ON GITHUB &#8599;</span>
+          <span class="pc-links">
+            <a class="pc-link pc-live" href="https://abinashprasana-riskradar-it-incident-sla-risk-app-bvwccq.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link" href="https://github.com/abinashprasana/riskradar-it-incident-sla-risk" target="_blank" rel="noopener">GITHUB &#8599;</a>
+          </span>
         </div>
         <div class="pc-main">
           <h3>RiskRadar, IT incident SLA risk prediction</h3>
           <p>A machine learning tool that predicts SLA breach risk for IT incidents drawn from 141,712 raw event logs, enabling faster triage through data-driven risk-band scoring. The Random Forest classifier achieved 92% accuracy, AUC-ROC 0.9684 and an F1 score of 0.887, correctly identifying 1,569 breach cases across 24,918 incidents.</p>
           <div class="pc-tags"><span>Python</span><span>Scikit-learn</span><span>Random Forest</span><span>Streamlit</span></div>
         </div>
-      </a>
+      </div>
 
     </div>
     <p class="gh-note reveal">More projects and experiments are on <a href="https://github.com/abinashprasana" target="_blank" rel="noopener">GitHub</a> &rarr;</p>
@@ -390,9 +418,18 @@
         </div>
       </div>
       <div class="contact-links">
-        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=abinashprasana400@gmail.com" target="_blank" rel="noopener"><span>EMAIL</span><span>abinashprasana400@gmail.com &#8599;</span></a>
-        <a href="https://www.linkedin.com/in/abinash-prasana-s-2515b7221" target="_blank" rel="noopener"><span>LINKEDIN</span><span>abinash-prasana-s-2515b7221 &#8599;</span></a>
-        <a href="https://github.com/abinashprasana" target="_blank" rel="noopener"><span>GITHUB</span><span>github.com/abinashprasana &#8599;</span></a>
+        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=abinashprasana400@gmail.com" target="_blank" rel="noopener">
+          <span class="cl-k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>EMAIL</span>
+          <span>abinashprasana400@gmail.com &#8599;</span>
+        </a>
+        <a href="https://www.linkedin.com/in/abinash-prasana-s-2515b7221" target="_blank" rel="noopener">
+          <span class="cl-k"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/></svg>LINKEDIN</span>
+          <span>abinash-prasana-s-2515b7221 &#8599;</span>
+        </a>
+        <a href="https://github.com/abinashprasana" target="_blank" rel="noopener">
+          <span class="cl-k"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 00-3.64 22.4c.58.1.8-.26.8-.57v-2c-3.26.7-3.95-1.36-3.95-1.36-.53-1.36-1.3-1.72-1.3-1.72-1.07-.72.08-.7.08-.7 1.18.08 1.8 1.22 1.8 1.22 1.05 1.8 2.76 1.28 3.44.98.1-.76.4-1.28.73-1.57-2.6-.3-5.34-1.3-5.34-5.8 0-1.28.46-2.32 1.22-3.14-.12-.3-.53-1.52.12-3.16 0 0 1-.32 3.3 1.2a11.3 11.3 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.64.24 2.86.12 3.16.76.82 1.22 1.86 1.22 3.14 0 4.52-2.75 5.5-5.37 5.8.42.36.8 1.08.8 2.18v3.23c0 .32.22.68.8.57A11.5 11.5 0 0012 .5z"/></svg>GITHUB</span>
+          <span>github.com/abinashprasana &#8599;</span>
+        </a>
       </div>
     </div>
 
@@ -409,6 +446,14 @@
       <p class="i2">ABINASH PRASANA SELVANATHAN</p>
       <p class="i3">MSC ARTIFICIAL INTELLIGENCE &middot; DUBLIN, IRELAND</p>
       <div class="intro-track"><div class="intro-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Certificate modal -->
+  <div id="cert-modal" aria-hidden="true">
+    <div class="cm-card glass" role="dialog" aria-modal="true" aria-label="Certificate preview">
+      <button class="cm-close" type="button" aria-label="Close preview">&times;</button>
+      <div class="cm-body" id="cert-modal-body"></div>
     </div>
   </div>
 

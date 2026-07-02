@@ -51,6 +51,119 @@
     revealEls.forEach(function (el) { el.classList.add('in'); });
   }
 
+  /* ---------- Hamburger menu ---------- */
+  var burger = document.getElementById('burger');
+  var mobileNav = document.getElementById('mobile-nav');
+  if (burger && mobileNav) {
+    burger.addEventListener('click', function () {
+      var open = burger.classList.toggle('open');
+      mobileNav.classList.toggle('open', open);
+      mobileNav.hidden = !open;
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    mobileNav.addEventListener('click', function (e) {
+      if (e.target && e.target.closest('a')) {
+        burger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        mobileNav.hidden = true;
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* ---------- Certificate modal ---------- */
+  var CERTS = [
+    {
+      title: 'JPMorgan Chase & Co. Software Engineering Job Simulation',
+      issuer: 'FORAGE · JANUARY 2026',
+      image: 'assets/jpmorgan-cert.png',
+      verify: 'https://www.theforage.com/completion-certificates/Sj7temL583QAYpHXD/E6McHJDKsQYh79moz_Sj7temL583QAYpHXD_696807b3afb60a1158b52c05_1768583777280_completion_certificate.pdf',
+      desc: 'A virtual job simulation developed by JPMorgan Chase that gives hands-on software engineering experience by working with real-world technologies used in industry. Through this simulation, I completed practical tasks involving backend development with tools like Spring Boot, Kafka integration, REST APIs, and database interaction, which strengthened my understanding of building scalable services and enterprise software practices.'
+    },
+    {
+      title: 'IBM Data Science Professional Certificate (V3)',
+      issuer: 'COURSERA · NOVEMBER 2025',
+      image: 'assets/ibm-data-science-cert.png',
+      verify: 'https://www.credly.com/badges/babf18dc-fa2a-4ab4-ad3e-e728752e5098/linked_in_profile',
+      desc: 'An online professional certificate from IBM that covers core data science and machine learning skills used in real industry roles. The program includes training in Python programming, databases and SQL, data visualization, exploratory data analysis, and machine learning, and it culminates in hands-on projects that showcase applied data science techniques and tools.'
+    },
+    {
+      title: 'AWS Cloud Practitioner Essentials',
+      issuer: 'AWS TRAINING & CERTIFICATION · MAY 2026',
+      image: 'assets/aws-cloud-practitioner-cert.png',
+      verify: '',
+      desc: 'A completion certificate from AWS Training and Certification covering foundational cloud computing concepts and core AWS services. The course covers essential areas including cloud architecture, security and compliance, pricing models, storage, compute, and networking on the AWS platform, providing a solid grounding in how modern cloud infrastructure is designed and operated.'
+    },
+    {
+      title: 'Claude Code in Action',
+      issuer: 'ANTHROPIC · MARCH 2026',
+      image: 'assets/claude-code-cert.png',
+      verify: 'https://verify.skilljar.com/c/ng4mrdhdsa4b',
+      desc: 'A certificate of completion from Anthropic for the Claude Code in Action course, which provides hands-on training in using Claude Code as an AI-powered development tool. The course covers practical workflows for building, debugging, and iterating on real software projects using Claude as an intelligent coding assistant, reflecting a growing skillset at the intersection of AI and software engineering.'
+    },
+    {
+      title: 'SAS Programming 1: Essentials',
+      issuer: 'SAS · CREDLY BADGE',
+      image: 'assets/sas-programming-cert.png',
+      verify: 'https://www.credly.com/badges/bc6d1521-488c-431d-b4ec-1eb6f386e08a/linked_in_profile',
+      desc: 'A verified digital badge issued through Credly by SAS, recognising completion of SAS Programming 1: Essentials. The course covers the fundamentals of the SAS programming language for data access, manipulation, and analysis, building practical skills in writing SAS programs, working with SAS data sets, producing formatted reports, and applying basic statistical procedures within the SAS environment.'
+    },
+    {
+      title: 'SQL (Intermediate)',
+      issuer: 'HACKERRANK · JUNE 2026',
+      image: 'assets/sql-intermediate-cert.png',
+      verify: 'https://www.hackerrank.com/certificates/iframe/a0a9acf47083',
+      desc: 'A skill certification from HackerRank awarded for passing the SQL Intermediate assessment. The test evaluates practical knowledge of relational databases and query writing, covering complex joins, aggregations, subqueries, set operations, and working with multiple tables to extract and analyse structured data. Certificate ID: A0A9ACF47083.'
+    }
+  ];
+
+  var certModal = document.getElementById('cert-modal');
+  var certModalBody = document.getElementById('cert-modal-body');
+  function closeCertModal() {
+    if (!certModal) return;
+    certModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  }
+  function openCertModal(i) {
+    var cert = CERTS[i];
+    if (!cert || !certModal || !certModalBody) return;
+    certModalBody.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = cert.image; img.alt = cert.title; img.loading = 'lazy';
+    var h = document.createElement('h3'); h.textContent = cert.title;
+    var iss = document.createElement('p'); iss.className = 'cm-issuer'; iss.textContent = cert.issuer;
+    var p = document.createElement('p'); p.textContent = cert.desc;
+    certModalBody.appendChild(img);
+    certModalBody.appendChild(h);
+    certModalBody.appendChild(iss);
+    certModalBody.appendChild(p);
+    var full = document.createElement('a');
+    full.className = 'cm-verify';
+    full.href = cert.verify || cert.image;
+    full.target = '_blank'; full.rel = 'noopener';
+    full.textContent = cert.verify ? 'Verify certificate ↗' : 'Open full view ↗';
+    certModalBody.appendChild(full);
+    certModal.classList.add('open');
+    document.body.classList.add('modal-open');
+  }
+  if (certModal) {
+    document.querySelectorAll('.certs-grid .cert-card').forEach(function (card, i) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCertModal(i);
+      });
+    });
+    certModal.addEventListener('click', function (e) {
+      if (e.target === certModal) closeCertModal();
+    });
+    var closeBtn = certModal.querySelector('.cm-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeCertModal);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeCertModal();
+    });
+  }
+
   /* ---------- Active nav link ---------- */
   var navLinks = document.querySelectorAll('.header-nav a');
   if ('IntersectionObserver' in window && navLinks.length) {
