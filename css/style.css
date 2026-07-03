@@ -40,6 +40,7 @@ body::after {
   --mote: 168,220,255;
   --spec: rgba(178,228,255,.11);
   --edge-hi: rgba(224,246,255,.52); --edge-lo: rgba(185,170,255,.28);
+  --ice-base: .16;
 }
 [data-theme="light"] {
   --bg: #e9f1f7; --text: #13232f; --text-mut: rgba(19,35,47,.82); --text-dim: rgba(19,35,47,.68);
@@ -57,6 +58,7 @@ body::after {
   --mote: 20,110,170;
   --spec: rgba(255,255,255,.5);
   --edge-hi: rgba(255,255,255,.95); --edge-lo: rgba(106,91,208,.3);
+  --ice-base: .14;
 }
 
 /* ---------- Shared glass recipe: luminous edge, specular + sheen ---------- */
@@ -112,6 +114,18 @@ a:focus-visible, button:focus-visible {
 
 /* pointer-driven drift wrapper: the whole light field sways with the mouse */
 .bg-drift { position: fixed; inset: 0; z-index: 0; pointer-events: none; will-change: transform; }
+
+/* iceberg keel at the surface — bobs gently, fades as you dive */
+#iceberg {
+  position: absolute; top: -14px; right: 5%;
+  width: 340px; height: auto;
+  opacity: calc(var(--ice-base) * clamp(0, 1 - var(--depth, 0) * 1.7, 1));
+  animation: bergBob 16s ease-in-out infinite;
+}
+@keyframes bergBob {
+  0%, 100% { transform: translate(0, 0) rotate(-.8deg); }
+  50% { transform: translate(-16px, 10px) rotate(1deg); }
+}
 
 /* underwater light drift */
 .bg-caustics {
@@ -169,6 +183,19 @@ body.webgl-water #water { display: block; }
 body.webgl-water .bg-caustics { display: none; }
 body.webgl-water .blob { opacity: .6; }
 
+/* ---------- Dive current: directional shimmer while jumping to a section ---------- */
+#current {
+  position: fixed; top: -25%; bottom: -25%; left: 0; right: 0; z-index: 1;
+  pointer-events: none; opacity: 0;
+  background: linear-gradient(180deg, transparent 20%, rgba(143,217,255,.05) 45%, rgba(185,170,255,.045) 55%, transparent 80%);
+  transition: opacity .25s ease;
+}
+body.diving #current { opacity: 1; }
+body.dive-down #current { animation: currentDown .6s linear infinite; }
+body.dive-up #current { animation: currentUp .6s linear infinite; }
+@keyframes currentDown { from { transform: translateY(28%); } to { transform: translateY(-28%); } }
+@keyframes currentUp { from { transform: translateY(-28%); } to { transform: translateY(28%); } }
+
 /* ---------- Scroll progress ---------- */
 #progress-bar {
   position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 140;
@@ -205,6 +232,14 @@ body.webgl-water .blob { opacity: .6; }
 .header-meta { display: flex; align-items: center; gap: 16px; font-size: 11px; letter-spacing: .1em; color: var(--text-dim); }
 .header-meta .depth-label { white-space: nowrap; }
 #depth-readout { color: var(--acc); }
+/* odometer digits roll instead of swapping */
+#depth-readout.odo { display: inline-flex; align-items: baseline; }
+#depth-readout .dcol { display: inline-block; height: 1em; overflow: hidden; }
+#depth-readout .dstack { display: flex; flex-direction: column; transition: transform .45s cubic-bezier(.22,.61,.21,1); }
+#depth-readout .dstack span { height: 1em; line-height: 1; }
+#depth-readout .at-bottom { display: none; }
+#depth-readout.bottom .dcol, #depth-readout.bottom .pct { display: none; }
+#depth-readout.bottom .at-bottom { display: inline; }
 #theme-toggle {
   padding: 5px 12px; border-radius: 8px; cursor: pointer;
   border: 1px solid var(--glass-brd);
@@ -280,6 +315,11 @@ section#contact { padding-bottom: 64px; }
   font-size: clamp(110px, 16vw, 200px); line-height: 1; letter-spacing: -.04em;
   color: transparent; -webkit-text-stroke: 1.5px var(--line);
   opacity: .6; will-change: transform;
+}
+.sec-ghost.pulse { animation: ghostPulse 1s cubic-bezier(.22,.61,.21,1); }
+@keyframes ghostPulse {
+  0% { -webkit-text-stroke-color: var(--acc-line); opacity: 1; }
+  100% { -webkit-text-stroke-color: var(--line); opacity: .6; }
 }
 /* titles rise out of the waterline as their section reveals */
 .sec-head .sec-title {
@@ -452,6 +492,17 @@ body.quick-intro .hero-title .w:nth-of-type(3) { animation-delay: .6s; }
   transition: color .25s ease, border-color .25s ease;
 }
 .cm-close:hover { color: var(--acc); border-color: var(--acc-line); }
+.cm-nav {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+  width: 34px; height: 44px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--glass-brd);
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  color: var(--text); font-size: 22px; line-height: 1;
+  transition: color .25s ease, border-color .25s ease;
+}
+.cm-prev { left: 10px; }
+.cm-next { right: 10px; }
+.cm-nav:hover { color: var(--acc); border-color: var(--acc-line); }
 .cm-body img {
   display: block; width: 100%; border-radius: 12px; margin: 0 0 18px;
   border: 1px solid var(--line);
@@ -848,6 +899,8 @@ body.modal-open { overflow: hidden; }
   }
   .sec-ghost { font-size: 96px; top: -.15em; }
   #to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
+  #iceberg { width: 190px; right: 2%; }
+  .cm-nav { width: 30px; height: 40px; }
   .about-grid, .contact-grid, .skills-grid { grid-template-columns: 1fr; }
   .certs-grid { grid-template-columns: 1fr; }
   .pc-head { flex-wrap: wrap; row-gap: 4px; }

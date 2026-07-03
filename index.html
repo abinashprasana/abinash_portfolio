@@ -28,11 +28,29 @@
     <div class="blob blob-a"></div>
     <div class="blob blob-b"></div>
     <div class="blob blob-c"></div>
+    <!-- iceberg keel seen from below the surface; fades as you dive -->
+    <svg id="iceberg" viewBox="0 0 300 320" preserveAspectRatio="xMidYMin meet">
+      <defs>
+        <linearGradient id="berg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#dff4ff" stop-opacity=".85"/>
+          <stop offset=".25" stop-color="#9fd4f5" stop-opacity=".45"/>
+          <stop offset="1" stop-color="#8f9dff" stop-opacity=".08"/>
+        </linearGradient>
+      </defs>
+      <polygon fill="url(#berg)" points="118,26 152,10 186,30 214,22 236,48 252,58 240,64 258,74 232,86 246,118 210,150 216,196 178,232 168,278 150,308 128,252 100,214 106,168 74,140 88,104 58,84 84,70 66,58 96,50 108,36"/>
+      <path d="M152,10 138,64 150,120 132,180 150,240 150,308" fill="none" stroke="#eaf7ff" stroke-opacity=".22" stroke-width="1.4"/>
+      <path d="M214,22 196,80 210,150" fill="none" stroke="#eaf7ff" stroke-opacity=".14" stroke-width="1.2"/>
+      <path d="M88,104 118,132 106,168" fill="none" stroke="#eaf7ff" stroke-opacity=".14" stroke-width="1.2"/>
+      <line x1="0" y1="62" x2="300" y2="62" stroke="#dff4ff" stroke-opacity=".28" stroke-width="1.6"/>
+    </svg>
   </div>
   <canvas id="motes" aria-hidden="true"></canvas>
 
   <!-- Scroll progress -->
   <div id="progress-bar" aria-hidden="true"></div>
+
+  <!-- Directional shimmer shown while diving between sections -->
+  <div id="current" aria-hidden="true"></div>
 
   <!-- Header -->
   <header class="site-header">
@@ -467,6 +485,8 @@
   <div id="cert-modal" aria-hidden="true">
     <div class="cm-card glass" role="dialog" aria-modal="true" aria-label="Certificate preview">
       <button class="cm-close" type="button" aria-label="Close preview">&times;</button>
+      <button class="cm-nav cm-prev" type="button" aria-label="Previous certificate">&#8249;</button>
+      <button class="cm-nav cm-next" type="button" aria-label="Next certificate">&#8250;</button>
       <div class="cm-body" id="cert-modal-body"></div>
     </div>
   </div>
