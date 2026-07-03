@@ -8,11 +8,25 @@
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  /* ---------- Intro splash ---------- */
+  /* ---------- Intro splash: full defog once per session, quick after ---------- */
   var intro = document.getElementById('intro');
+  var seenIntro = false;
+  try { seenIntro = sessionStorage.getItem('ap-seen') === '1'; } catch (e) {}
+  try { sessionStorage.setItem('ap-seen', '1'); } catch (e) {}
+  if (intro && seenIntro) intro.classList.add('quick');
+  if (seenIntro) document.body.classList.add('quick-intro');
   window.setTimeout(function () {
-    if (intro) intro.classList.add('done');
-  }, reducedMotion ? 400 : 2300);
+    if (!intro) return;
+    intro.classList.add('done');
+    if (!reducedMotion && !seenIntro) {
+      for (var ri = 0; ri < 2; ri++) {
+        var rp = document.createElement('span');
+        rp.className = 'intro-ripple' + (ri ? ' r2' : '');
+        document.body.appendChild(rp);
+        window.setTimeout(function (el) { return function () { el.remove(); }; }(rp), 2100);
+      }
+    }
+  }, reducedMotion ? 300 : (seenIntro ? 450 : 2300));
 
   /* ---------- Theme toggle (persisted) ---------- */
   var toggle = document.getElementById('theme-toggle');
@@ -26,12 +40,29 @@
     if (toggle) toggle.textContent = t === 'light' ? 'THEME ▸ LIGHT' : 'THEME ▸ DARK';
   }
   themeLabel();
+  function applyTheme(next) {
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('ap-theme', next); } catch (e) {}
+    themeLabel();
+  }
   if (toggle) {
     toggle.addEventListener('click', function () {
       var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      try { localStorage.setItem('ap-theme', next); } catch (e) {}
-      themeLabel();
+      /* ripple-wipe theme switch, expanding from the toggle button */
+      if (document.startViewTransition && !reducedMotion) {
+        var r = toggle.getBoundingClientRect();
+        var x = r.left + r.width / 2, y = r.top + r.height / 2;
+        var endR = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+        var vt = document.startViewTransition(function () { applyTheme(next); });
+        vt.ready.then(function () {
+          document.documentElement.animate(
+            { clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + endR + 'px at ' + x + 'px ' + y + 'px)'] },
+            { duration: 650, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' }
+          );
+        }).catch(function () {});
+      } else {
+        applyTheme(next);
+      }
     });
   }
 
@@ -197,19 +228,50 @@
     document.querySelectorAll('section[id]').forEach(function (s) { navIo.observe(s); });
   }
 
-  /* ---------- Depth readout + progress bar ---------- */
+  /* ---------- Depth readout, progress bar, scroll-linked motion ---------- */
   var depthEl = document.getElementById('depth-readout');
   var barEl = document.getElementById('progress-bar');
+  var depthVal = 0;
+  var ghosts = document.querySelectorAll('.sec-ghost');
+  var marqueeTrack = document.querySelector('.marquee-track');
+  var heroSide = document.querySelector('.hero-side');
+  var toTop = document.getElementById('to-top');
   function onScroll() {
     var h = document.documentElement;
     var max = h.scrollHeight - h.clientHeight;
     var pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    depthVal = pct;
     if (depthEl) depthEl.textContent = String(Math.round(pct * 100)).padStart(3, '0') + '%';
     if (barEl) barEl.style.transform = 'scaleX(' + pct.toFixed(4) + ')';
     document.documentElement.style.setProperty('--depth', pct.toFixed(3));
+    if (toTop) toTop.classList.toggle('show', pct > 0.45);
+    if (!reducedMotion) {
+      /* ghost numerals drift slower than the page */
+      for (var gi = 0; gi < ghosts.length; gi++) {
+        var gr = ghosts[gi].parentNode.getBoundingClientRect();
+        ghosts[gi].style.transform = 'translateY(' + (gr.top * 0.12).toFixed(1) + 'px)';
+      }
+      /* marquee phase nudges with scroll */
+      if (marqueeTrack) marqueeTrack.style.animationDelay = '-' + (pct * 10).toFixed(2) + 's';
+      /* hero side column lags a touch behind the text */
+      if (heroSide && window.scrollY < h.clientHeight * 1.3) {
+        heroSide.style.transform = 'translateY(' + (window.scrollY * 0.07).toFixed(1) + 'px)';
+      }
+    }
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  /* ---------- Back-to-top bubble ---------- */
+  if (toTop) {
+    toTop.addEventListener('click', function () {
+      if (!reducedMotion) {
+        toTop.classList.add('fly');
+        window.setTimeout(function () { toTop.classList.remove('fly'); }, 750);
+      }
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
+  }
 
   /* ---------- Count-up stats ---------- */
   var statEls = document.querySelectorAll('.stat-num[data-count]');
@@ -413,6 +475,116 @@
     window.requestAnimationFrame(drawWater);
   }
 
+  /* ---------- WebGL water: real caustics that bend toward the cursor ---------- */
+  (function initWater() {
+    if (reducedMotion) return;
+    var c = document.getElementById('water');
+    if (!c) return;
+    var gl;
+    try {
+      gl = c.getContext('webgl', { alpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' });
+    } catch (e) { return; }
+    if (!gl) return;
+
+    var VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    var FS = [
+      'precision mediump float;',
+      'uniform float uT;uniform vec2 uRes;uniform vec2 uMouse;uniform float uLight;uniform float uDepth;',
+      'vec2 h2(vec2 p){p=vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3)));return fract(sin(p)*43758.5453);}',
+      'float voro(vec2 x,float t){vec2 n=floor(x);vec2 f=fract(x);float m=8.0;',
+      'for(int j=-1;j<=1;j++){for(int i=-1;i<=1;i++){vec2 g=vec2(float(i),float(j));vec2 o=h2(n+g);o=0.5+0.5*sin(t+6.2831*o);vec2 r=g+o-f;m=min(m,dot(r,r));}}return m;}',
+      'void main(){',
+      'vec2 uv=gl_FragCoord.xy/uRes;vec2 asp=vec2(uRes.x/uRes.y,1.0);',
+      'vec2 m=uMouse/uRes;float md=distance(uv*asp,m*asp);',
+      'vec2 p=uv*asp*3.2;',
+      'p+=(m-uv)*asp*0.45*smoothstep(0.5,0.0,md);',
+      'float v1=voro(p+vec2(0.0,uT*0.05),uT*0.55);',
+      'float v2=voro(p*1.9+vec2(uT*0.03,uT*0.02),uT*0.4+2.0);',
+      'float c1=pow(clamp(1.0-v1,0.0,1.0),5.0);',
+      'float c2=pow(clamp(1.0-v2,0.0,1.0),6.0);',
+      'float ca=c1*0.75+c2*0.45;',
+      'ca*=0.75+0.7*smoothstep(0.45,0.0,md);',
+      'vec3 col=mix(vec3(0.36,0.72,1.0),vec3(0.55,0.5,1.0),clamp(uv.y+0.2*sin(uT*0.1),0.0,1.0));',
+      'float a=ca*0.16*(1.0-uDepth*0.45)+0.045*smoothstep(0.35,0.0,md);',
+      'if(uLight>0.5){col=mix(vec3(0.05,0.35,0.55),vec3(0.25,0.2,0.6),uv.y);a*=0.55;}',
+      'gl_FragColor=vec4(col*a,a);}'
+    ].join('\n');
+
+    function compile(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) return null;
+      return s;
+    }
+    var vs = compile(gl.VERTEX_SHADER, VS);
+    var fs = compile(gl.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) return;
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var locP = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(locP);
+    gl.vertexAttribPointer(locP, 2, gl.FLOAT, false, 0, 0);
+
+    var uT = gl.getUniformLocation(prog, 'uT');
+    var uRes = gl.getUniformLocation(prog, 'uRes');
+    var uMouse = gl.getUniformLocation(prog, 'uMouse');
+    var uLight = gl.getUniformLocation(prog, 'uLight');
+    var uDepth = gl.getUniformLocation(prog, 'uDepth');
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    var RES_SCALE = 0.5;
+    function sizeWater() {
+      c.width = Math.max(2, Math.round(window.innerWidth * RES_SCALE));
+      c.height = Math.max(2, Math.round(window.innerHeight * RES_SCALE));
+      gl.viewport(0, 0, c.width, c.height);
+    }
+    window.addEventListener('resize', sizeWater);
+    sizeWater();
+
+    var wmx = window.innerWidth / 2, wmy = window.innerHeight / 2;
+    var wtx = wmx, wty = wmy;
+    if (finePointer) {
+      window.addEventListener('mousemove', function (e) {
+        wtx = e.clientX; wty = e.clientY;
+      }, { passive: true });
+    }
+
+    var waterRunning = true;
+    document.addEventListener('visibilitychange', function () {
+      waterRunning = !document.hidden;
+      if (waterRunning) window.requestAnimationFrame(drawWaterGL);
+    });
+
+    var wt0 = performance.now();
+    function drawWaterGL(now) {
+      if (!waterRunning) return;
+      wmx += (wtx - wmx) * 0.06;
+      wmy += (wty - wmy) * 0.06;
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(uT, (now - wt0) / 1000);
+      gl.uniform2f(uRes, c.width, c.height);
+      gl.uniform2f(uMouse, wmx * RES_SCALE, c.height - wmy * RES_SCALE);
+      gl.uniform1f(uLight, document.documentElement.getAttribute('data-theme') === 'light' ? 1 : 0);
+      gl.uniform1f(uDepth, depthVal);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      window.requestAnimationFrame(drawWaterGL);
+    }
+    window.requestAnimationFrame(drawWaterGL);
+    document.body.classList.add('webgl-water');
+  })();
+
   /* ---------- Background drift: the light field sways toward the cursor ---------- */
   var driftLayer = document.querySelector('.bg-drift');
   if (driftLayer && finePointer && !reducedMotion) {
@@ -474,32 +646,38 @@
     }, { passive: true });
   }
 
-  /* ---------- Custom cursor: instant dot + liquid-lag glass ring ---------- */
+  /* ---------- Custom cursor: droplet ring that stretches, snaps and breathes ---------- */
   if (finePointer) {
     document.body.classList.add('cursor-fx');
     var dot = document.getElementById('cursor-dot');
     var ring = document.getElementById('cursor-ring');
+    var labelEl = document.getElementById('cursor-label');
     var tx = -100, ty = -100, cx = -100, cy = -100;
     var scale = 1, tscale = 1;
+    var ringW = 38, ringH = 38, ringR = 19, tW = 38, tH = 38, tR = 19;
+    var snapEl = null;
+    var lastMove = performance.now();
 
     window.addEventListener('mousemove', function (e) {
       tx = e.clientX; ty = e.clientY;
+      lastMove = performance.now();
       if (dot) dot.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
     }, { passive: true });
 
-    var labelEl = document.getElementById('cursor-label');
     function cursorTargetScale(e) {
       var el = e.target && e.target.closest ? e.target : null;
       var lab = '';
+      snapEl = null;
       if (el) {
         if (el.closest('.cert-card')) lab = 'OPEN';
         else if (el.closest('.copy-email')) lab = 'COPY';
         else if (el.closest('.pc-link.pc-live')) lab = 'LIVE';
+        snapEl = el.closest('.social-btn, #theme-toggle, #burger, .cm-close, #to-top');
       }
       if (labelEl) labelEl.textContent = lab;
       if (ring) ring.classList.toggle('labeled', !!lab);
       var t = el && el.closest('a, button');
-      return lab ? 2.5 : (t ? 1.9 : 1);
+      return lab ? 2.5 : (t && !snapEl ? 1.9 : 1);
     }
     window.addEventListener('mouseover', function (e) {
       tscale = cursorTargetScale(e);
@@ -516,11 +694,46 @@
     });
 
     (function loop() {
-      cx += (tx - cx) * 0.16;
-      cy += (ty - cy) * 0.16;
+      var now = performance.now();
+      var t = now / 1000;
+      var ttx = tx, tty = ty;
+      /* snap: the ring morphs to wrap small buttons */
+      if (snapEl) {
+        var sr = snapEl.getBoundingClientRect();
+        if (sr.width > 0) {
+          tW = sr.width + 12; tH = sr.height + 12;
+          tR = Math.min(parseFloat(getComputedStyle(snapEl).borderRadius) + 6 || 14, tH / 2);
+          ttx = sr.left + sr.width / 2; tty = sr.top + sr.height / 2;
+          tscale = 1;
+        }
+      } else {
+        tW = 38; tH = 38; tR = 19;
+      }
+      var vx = (ttx - cx) * 0.16, vy = (tty - cy) * 0.16;
+      cx += vx; cy += vy;
+      ringW += (tW - ringW) * 0.22;
+      ringH += (tH - ringH) * 0.22;
+      ringR += (tR - ringR) * 0.22;
       scale += (tscale - scale) * 0.18;
-      if (ring) ring.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
-      if (labelEl) labelEl.style.transform = 'scale(' + (1 / Math.max(scale, 0.1)).toFixed(3) + ')';
+      /* idle: the droplet breathes gently */
+      var eff = scale;
+      if (!snapEl && now - lastMove > 4000) eff = scale * (1 + 0.05 * Math.sin(t * 1.8));
+      /* droplet physics: stretch along the direction of travel */
+      var v = Math.sqrt(vx * vx + vy * vy);
+      var stretch = snapEl ? 0 : Math.min(v * 0.02, 0.3);
+      var ang = Math.atan2(vy, vx);
+      if (ring) {
+        ring.style.width = ringW.toFixed(1) + 'px';
+        ring.style.height = ringH.toFixed(1) + 'px';
+        ring.style.borderRadius = ringR.toFixed(1) + 'px';
+        ring.style.borderWidth = (1.5 / Math.max(eff, 0.5)).toFixed(2) + 'px';
+        ring.style.transform =
+          'translate(' + (cx - ringW / 2).toFixed(1) + 'px,' + (cy - ringH / 2).toFixed(1) + 'px) ' +
+          'rotate(' + ang.toFixed(3) + 'rad) ' +
+          'scale(' + (eff * (1 + stretch)).toFixed(3) + ',' + (eff * (1 - stretch * 0.55)).toFixed(3) + ') ' +
+          'rotate(' + (-ang).toFixed(3) + 'rad)';
+      }
+      if (labelEl) labelEl.style.transform = 'scale(' + (1 / Math.max(eff, 0.1)).toFixed(3) + ')';
       window.requestAnimationFrame(loop);
     })();
   }

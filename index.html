@@ -11,7 +11,8 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://abinashprasana.github.io/abinash_portfolio/">
   <meta property="og:site_name" content="Abinash Prasana Selvanathan | Portfolio">
-  <link rel="icon" type="image/jpeg" href="assets/profile.jpeg">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="alternate icon" type="image/jpeg" href="assets/profile.jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -19,8 +20,9 @@
 </head>
 <body>
 
-  <!-- Background layers: grid, drifting light caustics, aurora blobs, water canvas -->
+  <!-- Background layers: grid, WebGL water, drifting light caustics, aurora blobs, water canvas -->
   <div class="bg-grid" aria-hidden="true"></div>
+  <canvas id="water" aria-hidden="true"></canvas>
   <div class="bg-drift" aria-hidden="true">
     <div class="bg-caustics"></div>
     <div class="blob blob-a"></div>
@@ -145,6 +147,7 @@
   <!-- ============ 01 ABOUT ============ -->
   <section id="about">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">01</span>
       <p class="sec-kicker">01 &middot; BACKGROUND</p>
       <h2 class="sec-title">ABOUT <span class="lens">ME<span class="lens-glass"><span class="lens-mag">ME</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -177,6 +180,7 @@
   <!-- ============ 02 WORK & EDUCATION ============ -->
   <section id="experience">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">02</span>
       <p class="sec-kicker">02 &middot; PROFESSIONAL JOURNEY AND ACADEMIC BACKGROUND</p>
       <h2 class="sec-title">WORK &amp; <span class="lens">EDUCATION<span class="lens-glass"><span class="lens-mag">EDUCATION</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -220,6 +224,7 @@
   <!-- ============ 03 PROJECTS ============ -->
   <section id="projects">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">03</span>
       <p class="sec-kicker">03 &middot; APPLIED ML, NLP AND PRACTICAL TOOLING</p>
       <h2 class="sec-title">SELECTED <span class="lens">PROJECTS<span class="lens-glass"><span class="lens-mag">PROJECTS</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -230,7 +235,7 @@
         <div class="pc-head">
           <span class="pc-code">01 &middot; EXPLAINABLE ML</span>
           <span class="pc-links">
-            <a class="pc-link pc-live" href="https://abinashprasana-irish-banking-churn-app-aidovf.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link pc-live" title="Hosted on Streamlit — may take ~30 seconds to wake if idle" href="https://abinashprasana-irish-banking-churn-app-aidovf.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
             <a class="pc-link" href="https://github.com/abinashprasana/irish-banking-churn" target="_blank" rel="noopener">GITHUB &#8599;</a>
           </span>
         </div>
@@ -259,7 +264,7 @@
         <div class="pc-head">
           <span class="pc-code">03 &middot; TRANSFORMER FROM SCRATCH</span>
           <span class="pc-links">
-            <a class="pc-link pc-live" href="https://abinashprasana-dail-llm-dail-llmappstreamlit-app-um65t7.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link pc-live" title="Hosted on Streamlit — may take ~30 seconds to wake if idle" href="https://abinashprasana-dail-llm-dail-llmappstreamlit-app-um65t7.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
             <a class="pc-link" href="https://github.com/abinashprasana/dail-llm" target="_blank" rel="noopener">GITHUB &#8599;</a>
           </span>
         </div>
@@ -316,7 +321,7 @@
         <div class="pc-head">
           <span class="pc-code">07 &middot; CLASSIFICATION / IT OPERATIONS</span>
           <span class="pc-links">
-            <a class="pc-link pc-live" href="https://abinashprasana-riskradar-it-incident-sla-risk-app-bvwccq.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link pc-live" title="Hosted on Streamlit — may take ~30 seconds to wake if idle" href="https://abinashprasana-riskradar-it-incident-sla-risk-app-bvwccq.streamlit.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
             <a class="pc-link" href="https://github.com/abinashprasana/riskradar-it-incident-sla-risk" target="_blank" rel="noopener">GITHUB &#8599;</a>
           </span>
         </div>
@@ -334,6 +339,7 @@
   <!-- ============ 04 SKILLS ============ -->
   <section id="skills">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">04</span>
       <p class="sec-kicker">04 &middot; TOOLS, FRAMEWORKS AND DOMAIN KNOWLEDGE</p>
       <h2 class="sec-title">TECHNICAL <span class="lens">SKILLS<span class="lens-glass"><span class="lens-mag">SKILLS</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -360,6 +366,7 @@
   <!-- ============ 05 CERTIFICATIONS ============ -->
   <section id="certifications">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">05</span>
       <p class="sec-kicker">05 &middot; PROFESSIONAL CREDENTIALS AND COURSE COMPLETIONS</p>
       <h2 class="sec-title">MY <span class="lens">CERTIFICATIONS<span class="lens-glass"><span class="lens-mag">CERTIFICATIONS</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -406,6 +413,7 @@
   <!-- ============ 06 CONTACT ============ -->
   <section id="contact">
     <div class="sec-head reveal">
+      <span class="sec-ghost" aria-hidden="true">06</span>
       <p class="sec-kicker">06 &middot; OPEN TO OPPORTUNITIES IN IRELAND AND BEYOND</p>
       <h2 class="sec-title">LET'S <span class="lens">CONNECT<span class="lens-glass"><span class="lens-mag">CONNECT</span><span class="lens-sheen"></span></span></span></h2>
     </div>
@@ -449,6 +457,11 @@
       <div class="intro-track"><div class="intro-fill"></div></div>
     </div>
   </div>
+
+  <!-- Back to top: a glass air bubble -->
+  <button id="to-top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
 
   <!-- Certificate modal -->
   <div id="cert-modal" aria-hidden="true">

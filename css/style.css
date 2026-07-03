@@ -163,6 +163,12 @@ a:focus-visible, button:focus-visible {
 /* frost motes canvas */
 #motes { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
+/* WebGL water: real-time caustics; hides the CSS caustics layer when running */
+#water { position: fixed; inset: 0; z-index: 0; pointer-events: none; width: 100%; height: 100%; filter: blur(5px) saturate(1.1); display: none; }
+body.webgl-water #water { display: block; }
+body.webgl-water .bg-caustics { display: none; }
+body.webgl-water .blob { opacity: .6; }
+
 /* ---------- Scroll progress ---------- */
 #progress-bar {
   position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 140;
@@ -261,11 +267,29 @@ section { position: relative; z-index: 1; padding: 96px 60px; max-width: 1220px;
 section#home { padding: 176px 60px 96px; }
 section#contact { padding-bottom: 64px; }
 
-.sec-head { margin-bottom: 48px; }
+.sec-head { position: relative; margin-bottom: 48px; }
 .sec-kicker { margin: 0 0 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .2em; color: var(--text-dim); }
 .sec-title {
   margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700;
   font-size: 64px; line-height: 1.04; letter-spacing: -.03em; color: var(--text);
+}
+/* huge ghost numeral drifting behind each section heading */
+.sec-ghost {
+  position: absolute; right: 0; top: -.28em; z-index: -1; pointer-events: none;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  font-size: clamp(110px, 16vw, 200px); line-height: 1; letter-spacing: -.04em;
+  color: transparent; -webkit-text-stroke: 1.5px var(--line);
+  opacity: .6; will-change: transform;
+}
+/* titles rise out of the waterline as their section reveals */
+.sec-head .sec-title {
+  clip-path: inset(-0.3em -0.4em 110% -0.4em);
+  transform: translateY(.5em);
+  transition: clip-path 1s cubic-bezier(.22,.61,.21,1) .1s, transform 1s cubic-bezier(.22,.61,.21,1) .1s;
+}
+.sec-head.in .sec-title {
+  clip-path: inset(-0.3em -0.4em -0.3em -0.4em);
+  transform: translateY(0);
 }
 
 /* ---------- Glass lens on headings ---------- */
@@ -302,6 +326,10 @@ section#contact { padding-bottom: 64px; }
 .hero-title .w:nth-of-type(1) { animation-delay: 1.9s; }
 .hero-title .w:nth-of-type(2) { animation-delay: 2.08s; }
 .hero-title .w:nth-of-type(3) { animation-delay: 2.3s; }
+/* repeat visits skip the long intro, so the name surfaces sooner */
+body.quick-intro .hero-title .w:nth-of-type(1) { animation-delay: .3s; }
+body.quick-intro .hero-title .w:nth-of-type(2) { animation-delay: .44s; }
+body.quick-intro .hero-title .w:nth-of-type(3) { animation-delay: .6s; }
 @keyframes surface { from { opacity: 0; transform: translateY(26px); } }
 .hero-role { margin: 0 0 22px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: .06em; color: var(--text-mut); }
 #role-word { color: var(--acc); }
@@ -506,12 +534,22 @@ body.modal-open { overflow: hidden; }
 .exp-bullets { display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; line-height: 1.6; color: var(--text-mut); }
 .exp-bullets span.row { display: flex; gap: 10px; }
 .exp-bullets .tick { color: var(--acc); flex-shrink: 0; }
+/* bullets surface one after another */
+.exp-row.reveal:not(.in) .exp-bullets .row { opacity: 0; }
+.exp-row.in .exp-bullets .row { animation: chipIn .55s cubic-bezier(.22,.61,.21,1) both; }
+.exp-row.in .exp-bullets .row:nth-child(1) { animation-delay: .25s; }
+.exp-row.in .exp-bullets .row:nth-child(2) { animation-delay: .4s; }
+.exp-row.in .exp-bullets .row:nth-child(3) { animation-delay: .55s; }
 
 /* ---------- Projects ---------- */
 .exp-list { display: flex; flex-direction: column; gap: 22px; }
 .project-card {
   display: block; border-radius: 18px; overflow: hidden;
-  transition: transform .4s cubic-bezier(.22,.61,.21,1), border-color .4s ease, box-shadow .4s ease;
+  transition: transform .4s cubic-bezier(.22,.61,.21,1), border-color .4s ease, box-shadow .4s ease, opacity .4s ease;
+}
+/* spotlight the hovered project; siblings recede */
+@media (hover: hover) and (pointer: fine) {
+  .exp-list:hover .project-card.in:not(:hover) { opacity: .55; }
 }
 .project-card:hover {
   transform: translateY(-4px);
@@ -635,6 +673,30 @@ body.modal-open { overflow: hidden; }
   to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 
+/* ---------- Back-to-top bubble ---------- */
+#to-top {
+  position: fixed; right: 26px; bottom: 26px; z-index: 130;
+  width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--glass-brd);
+  background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
+  box-shadow: inset 0 1px 0 var(--glass-inset), 0 8px 24px rgba(2,10,18,.3);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: var(--text-mut);
+  display: grid; place-items: center;
+  opacity: 0; visibility: hidden; transform: translateY(14px);
+  transition: opacity .4s ease, visibility .4s ease, transform .4s ease, color .25s ease, border-color .25s ease;
+  animation: bubbleBob 4s ease-in-out infinite;
+}
+#to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+#to-top:hover { color: var(--acc); border-color: var(--acc-line); }
+#to-top svg { width: 18px; height: 18px; }
+#to-top.fly { animation: bubbleFly .7s cubic-bezier(.4,0,.8,.4) forwards; }
+@keyframes bubbleBob { 0%, 100% { margin-bottom: 0; } 50% { margin-bottom: 6px; } }
+@keyframes bubbleFly { to { transform: translateY(-90vh) scale(.6); opacity: 0; } }
+
+/* ---------- Theme-switch ripple (View Transitions) ---------- */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
 /* ---------- Intro splash: frosted glass that defogs to reveal the page ---------- */
 #intro {
   position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
@@ -651,6 +713,25 @@ body.modal-open { overflow: hidden; }
   backdrop-filter: blur(0px) saturate(1);
   -webkit-backdrop-filter: blur(0px) saturate(1);
 }
+/* the card sinks beneath the surface as the fog clears */
+#intro .intro-card { transition: transform .9s cubic-bezier(.55,.06,.68,.19), opacity .7s ease; }
+#intro.done .intro-card { transform: translateY(30px) scale(.96); opacity: 0; }
+/* repeat visits within a session: quick defog, no card */
+#intro.quick .intro-card { display: none; }
+#intro.quick { transition-duration: .55s, .55s, .6s, .6s, .6s; }
+/* finale ripple where the card sinks */
+.intro-ripple {
+  position: fixed; left: 50%; top: 50%; z-index: 210; pointer-events: none;
+  width: 240px; height: 240px; border-radius: 50%;
+  border: 1.5px solid rgba(143,217,255,.5);
+  background: radial-gradient(circle, rgba(143,217,255,.12) 0%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0); opacity: .9;
+  animation: introRipple 1.3s cubic-bezier(.2,.6,.25,1) forwards;
+}
+.intro-ripple.r2 { animation-delay: .15s; animation-duration: 1.5s; }
+@keyframes introRipple {
+  to { transform: translate(-50%, -50%) scale(7); opacity: 0; }
+}
 .intro-card {
   width: 440px; max-width: 86vw; padding: 30px 34px; border-radius: 16px;
   background: linear-gradient(160deg, rgba(210,238,255,.08), rgba(210,238,255,.02));
@@ -664,10 +745,18 @@ body.modal-open { overflow: hidden; }
 .intro-card .i3 { margin: 0 0 22px; font-size: 11px; letter-spacing: .14em; color: #8fd9ff; animation: introLine .5s ease .6s both; }
 .intro-track { height: 3px; border-radius: 2px; background: rgba(210,238,255,.12); overflow: hidden; }
 .intro-fill {
-  height: 100%; background: linear-gradient(90deg, #8fd9ff, #b9aaff);
+  position: relative; height: 100%; overflow: hidden;
+  background: linear-gradient(90deg, #8fd9ff, #b9aaff);
   animation: introBar 1.7s cubic-bezier(.6,.05,.3,1) .2s both;
   box-shadow: 0 0 10px rgba(143,217,255,.5);
 }
+/* waterline shimmer riding the fill */
+.intro-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: fillShimmer 1.1s linear infinite;
+}
+@keyframes fillShimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @keyframes introBar { from { width: 0%; } to { width: 100%; } }
 @keyframes introLine { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
@@ -676,7 +765,7 @@ body.modal-open { overflow: hidden; }
   body.cursor-fx, body.cursor-fx a, body.cursor-fx button { cursor: none; }
 }
 #cursor-ring {
-  position: fixed; top: 0; left: 0; width: 38px; height: 38px; margin: -19px 0 0 -19px;
+  position: fixed; top: 0; left: 0; width: 38px; height: 38px;
   border-radius: 50%; border: 1.5px solid var(--acc-line);
   background: linear-gradient(150deg, var(--glass-hi), var(--glass-lo));
   backdrop-filter: blur(2px) saturate(1.3); -webkit-backdrop-filter: blur(2px) saturate(1.3);
@@ -757,6 +846,8 @@ body.modal-open { overflow: hidden; }
     backdrop-filter: blur(10px) saturate(1.1);
     -webkit-backdrop-filter: blur(10px) saturate(1.1);
   }
+  .sec-ghost { font-size: 96px; top: -.15em; }
+  #to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
   .about-grid, .contact-grid, .skills-grid { grid-template-columns: 1fr; }
   .certs-grid { grid-template-columns: 1fr; }
   .pc-head { flex-wrap: wrap; row-gap: 4px; }
@@ -790,5 +881,9 @@ body.modal-open { overflow: hidden; }
   .reveal { transition: none; opacity: 1; transform: none; filter: none; }
   * { animation-duration: .01s !important; animation-iteration-count: 1 !important; }
   html { scroll-behavior: auto; }
-  #motes { display: none; }
+  #motes, #water { display: none !important; }
+  .sec-head .sec-title { clip-path: none; transform: none; transition: none; }
+  .sec-ghost { transform: none !important; }
+  .skill-card.reveal:not(.in) .skill-chips span,
+  .exp-row.reveal:not(.in) .exp-bullets .row { opacity: 1; }
 }
