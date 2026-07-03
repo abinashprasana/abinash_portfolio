@@ -7,6 +7,7 @@
 
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var spawnBubblesAt = null; /* set by the water canvas, used by click ripples */
 
   /* ---------- Intro splash: full defog once per session, quick after ---------- */
   var intro = document.getElementById('intro');
@@ -375,26 +376,50 @@
       return v || '168,220,255';
     }
 
+    var moteTarget = 0;
     function sizeCanvas() {
       W = canvas.width = window.innerWidth;
       H = canvas.height = window.innerHeight;
-      var target = Math.min(56, Math.round((W * H) / 26000));
-      while (motes.length < target) motes.push(newMote(true));
-      motes.length = target;
+      moteTarget = Math.min(56, Math.round((W * H) / 26000));
+      while (motes.length < moteTarget) motes.push(newMote(true));
+      motes.length = moteTarget;
     }
 
     function newMote(anywhere) {
+      var bubble = Math.random() < 0.3;
+      var r = bubble ? 2 + Math.random() * 4.5 : 0.6 + Math.random() * 1.7;
       return {
+        bubble: bubble,
         x: Math.random() * W,
-        y: anywhere ? Math.random() * H : H + 6,
+        y: anywhere ? Math.random() * H : H + 8,
         ox: 0, oy: 0,
-        r: 0.6 + Math.random() * 1.7,
-        vy: 0.08 + Math.random() * 0.22,
+        r: r,
+        vy: bubble ? 0.25 + r * 0.08 + Math.random() * 0.2 : 0.08 + Math.random() * 0.22,
         drift: 0.5 + Math.random() * 1.6,
         phase: Math.random() * Math.PI * 2,
         tw: 0.4 + Math.random() * 0.45
       };
     }
+
+    /* a handful of bubbles burst upward from a point (used on click) */
+    spawnBubblesAt = function (bx, by) {
+      if (motes.length > moteTarget + 30) return;
+      var n = 4 + Math.floor(Math.random() * 3);
+      for (var bi = 0; bi < n; bi++) {
+        var r = 1.5 + Math.random() * 3;
+        motes.push({
+          bubble: true, burst: true,
+          x: bx + (Math.random() - 0.5) * 26,
+          y: by + (Math.random() - 0.5) * 14,
+          ox: 0, oy: 0,
+          r: r,
+          vy: 0.8 + r * 0.12 + Math.random() * 0.6,
+          drift: 0.8 + Math.random() * 1.4,
+          phase: Math.random() * Math.PI * 2,
+          tw: 0.6 + Math.random() * 0.5
+        });
+      }
+    };
 
     window.addEventListener('resize', sizeCanvas);
     sizeCanvas();
@@ -446,12 +471,17 @@
         glow(wake2.x, wake2.y, 60, 0.045, col);
       }
 
-      /* motes: rise slowly, twinkle, and get pushed aside near the cursor */
+      /* motes and bubbles: rise, wobble, twinkle, and get pushed aside near the cursor */
       for (var i = 0; i < motes.length; i++) {
         var m = motes[i];
         m.y -= m.vy;
-        if (m.y < -8) motes[i] = m = newMote(false);
-        var x = m.x + Math.sin(t * 0.5 + m.phase) * m.drift * 8;
+        if (m.y < -10) {
+          if (m.burst) { motes.splice(i, 1); i--; continue; }
+          motes[i] = m = newMote(false);
+        }
+        var x = m.bubble
+          ? m.x + Math.sin(t * (1.1 + m.r * 0.12) + m.phase) * (2 + m.r * 0.6)
+          : m.x + Math.sin(t * 0.5 + m.phase) * m.drift * 8;
 
         if (finePointer && mouseX > -500) {
           var dx = x + m.ox - mouseX, dy = m.y + m.oy - mouseY;
@@ -465,10 +495,32 @@
         m.ox *= 0.94; m.oy *= 0.94;
 
         var twinkle = 0.5 + 0.5 * Math.sin(t * m.tw * 2 + m.phase);
-        ctx.beginPath();
-        ctx.arc(x + m.ox, m.y + m.oy, m.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(' + col + ',' + (0.10 + twinkle * 0.28).toFixed(3) + ')';
-        ctx.fill();
+        var px = x + m.ox, py = m.y + m.oy;
+
+        if (m.bubble) {
+          /* an air bubble: rim-lit shell, faint body, specular glint */
+          var ba = 0.16 + twinkle * 0.18;
+          if (py < H * 0.14) ba *= Math.max(0, py / (H * 0.14));
+          if (ba <= 0.01) continue;
+          ctx.beginPath();
+          ctx.arc(px, py, m.r, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(' + col + ',' + Math.min(1, ba * 1.2).toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(px, py + m.r * 0.15, m.r * 0.82, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + col + ',' + (ba * 0.14).toFixed(3) + ')';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(px - m.r * 0.35, py - m.r * 0.38, Math.max(0.6, m.r * 0.22), 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, ba * 1.5).toFixed(3) + ')';
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(px, py, m.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + col + ',' + (0.10 + twinkle * 0.28).toFixed(3) + ')';
+          ctx.fill();
+        }
       }
       window.requestAnimationFrame(drawWater);
     }
@@ -504,6 +556,9 @@
       'float c2=pow(clamp(1.0-v2,0.0,1.0),6.0);',
       'float ca=c1*0.75+c2*0.45;',
       'ca*=0.75+0.7*smoothstep(0.45,0.0,md);',
+      'float ray1=pow(0.5+0.5*sin((uv.x*1.6-uv.y*0.35)*12.0+uT*0.18),8.0);',
+      'float ray2=pow(0.5+0.5*sin((uv.x*2.3+uv.y*0.2)*9.0-uT*0.12),10.0);',
+      'ca+=(ray1*0.7+ray2*0.5)*smoothstep(0.15,0.95,uv.y)*0.4;',
       'vec3 col=mix(vec3(0.36,0.72,1.0),vec3(0.55,0.5,1.0),clamp(uv.y+0.2*sin(uT*0.1),0.0,1.0));',
       'float a=ca*0.16*(1.0-uDepth*0.45)+0.045*smoothstep(0.35,0.0,md);',
       'if(uLight>0.5){col=mix(vec3(0.05,0.35,0.55),vec3(0.25,0.2,0.6),uv.y);a*=0.55;}',
@@ -617,6 +672,7 @@
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       spawnRipple(e.clientX, e.clientY, 130, '');
       spawnRipple(e.clientX, e.clientY, 190, 'r2');
+      if (spawnBubblesAt) spawnBubblesAt(e.clientX, e.clientY);
     }, { passive: true });
   }
 
