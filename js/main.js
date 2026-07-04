@@ -859,6 +859,17 @@
     var ringW = 38, ringH = 38, ringR = 19, tW = 38, tH = 38, tR = 19;
     var snapEl = null;
     var lastMove = performance.now();
+    /* trailing droplets, sized largest to smallest */
+    var drips = [].slice.call(document.querySelectorAll('.cursor-drip'));
+    var dripPos = [];
+    drips.forEach(function (d, di) {
+      var sz = 5 - di;
+      d.style.width = sz + 'px';
+      d.style.height = sz + 'px';
+      d.style.margin = (-sz / 2) + 'px 0 0 ' + (-sz / 2) + 'px';
+      dripPos.push({ x: -100, y: -100 });
+    });
+    if (reducedMotion) drips.forEach(function (d) { d.style.display = 'none'; });
 
     window.addEventListener('mousemove', function (e) {
       tx = e.clientX; ty = e.clientY;
@@ -936,6 +947,19 @@
           'rotate(' + (-ang).toFixed(3) + 'rad)';
       }
       if (labelEl) labelEl.style.transform = 'scale(' + (1 / Math.max(eff, 0.1)).toFixed(3) + ')';
+      /* droplets chase the dot with increasing lag; visible only while moving */
+      if (!reducedMotion) {
+        var prevX = tx, prevY = ty;
+        var dripAlpha = Math.min(0.5, v * 0.05);
+        for (var di = 0; di < drips.length; di++) {
+          var k = 0.3 - di * 0.07;
+          dripPos[di].x += (prevX - dripPos[di].x) * k;
+          dripPos[di].y += (prevY - dripPos[di].y) * k;
+          drips[di].style.transform = 'translate(' + dripPos[di].x.toFixed(1) + 'px,' + dripPos[di].y.toFixed(1) + 'px)';
+          drips[di].style.opacity = (dripAlpha * (1 - di * 0.28)).toFixed(3);
+          prevX = dripPos[di].x; prevY = dripPos[di].y;
+        }
+      }
       window.requestAnimationFrame(loop);
     })();
   }

@@ -484,10 +484,10 @@
 
   <!-- Certificate modal -->
   <div id="cert-modal" aria-hidden="true">
+    <button class="cm-nav cm-prev" type="button" aria-label="Previous certificate">&#8249;</button>
+    <button class="cm-nav cm-next" type="button" aria-label="Next certificate">&#8250;</button>
     <div class="cm-card glass" role="dialog" aria-modal="true" aria-label="Certificate preview">
       <button class="cm-close" type="button" aria-label="Close preview">&times;</button>
-      <button class="cm-nav cm-prev" type="button" aria-label="Previous certificate">&#8249;</button>
-      <button class="cm-nav cm-next" type="button" aria-label="Next certificate">&#8250;</button>
       <div class="cm-body" id="cert-modal-body"></div>
     </div>
   </div>
@@ -498,6 +498,9 @@
   <!-- Custom cursor -->
   <div id="cursor-ring" aria-hidden="true"><span id="cursor-label"></span></div>
   <div id="cursor-dot" aria-hidden="true"></div>
+  <span class="cursor-drip" aria-hidden="true"></span>
+  <span class="cursor-drip" aria-hidden="true"></span>
+  <span class="cursor-drip" aria-hidden="true"></span>
 
   <script src="js/main.js"></script>
 </body>
