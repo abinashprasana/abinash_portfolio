@@ -873,6 +873,8 @@ body.modal-open { overflow: hidden; }
 .certs-grid > .reveal:nth-child(4), .skills-grid > .reveal:nth-child(4) { transition-delay: .3s; }
 .certs-grid > .reveal:nth-child(5) { transition-delay: .4s; }
 .certs-grid > .reveal:nth-child(6) { transition-delay: .5s; }
+.certs-grid > .reveal:nth-child(7) { transition-delay: .6s; }
+.certs-grid > .reveal:nth-child(8) { transition-delay: .7s; }
 
 /* ---------- Scrollbar ---------- */
 ::-webkit-scrollbar { width: 10px; }

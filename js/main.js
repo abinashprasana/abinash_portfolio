@@ -120,21 +120,28 @@
       issuer: 'COURSERA · NOVEMBER 2025',
       image: 'assets/ibm-data-science-cert.png',
       verify: 'https://www.credly.com/badges/babf18dc-fa2a-4ab4-ad3e-e728752e5098/linked_in_profile',
-      desc: 'An online professional certificate from IBM that covers core data science and machine learning skills used in real industry roles. The program includes training in Python programming, databases and SQL, data visualization, exploratory data analysis, and machine learning, and it culminates in hands-on projects that showcase applied data science techniques and tools.'
+      desc: 'An online professional certificate from IBM that covers core data science and machine learning skills used in real industry roles. The program includes training in Python programming, databases and SQL, data visualisation, exploratory data analysis, and machine learning, and it culminates in hands-on projects that apply those techniques end to end.'
     },
     {
       title: 'AWS Cloud Practitioner Essentials',
       issuer: 'AWS TRAINING & CERTIFICATION · MAY 2026',
       image: 'assets/aws-cloud-practitioner-cert.png',
       verify: '',
-      desc: 'A completion certificate from AWS Training and Certification covering foundational cloud computing concepts and core AWS services. The course covers essential areas including cloud architecture, security and compliance, pricing models, storage, compute, and networking on the AWS platform, providing a solid grounding in how modern cloud infrastructure is designed and operated.'
+      desc: 'A completion certificate from AWS Training and Certification covering foundational cloud computing concepts and core AWS services. The course covers essential areas including cloud architecture, security and compliance, pricing models, storage, compute, and networking on the AWS platform.'
     },
     {
       title: 'Claude Code in Action',
       issuer: 'ANTHROPIC · MARCH 2026',
       image: 'assets/claude-code-cert.png',
       verify: 'https://verify.skilljar.com/c/ng4mrdhdsa4b',
-      desc: 'A certificate of completion from Anthropic for the Claude Code in Action course, which provides hands-on training in using Claude Code as an AI-powered development tool. The course covers practical workflows for building, debugging, and iterating on real software projects using Claude as an intelligent coding assistant, reflecting a growing skillset at the intersection of AI and software engineering.'
+      desc: 'A certificate of completion from Anthropic for the Claude Code in Action course, which provides hands-on training in using Claude Code as an AI-powered development tool. The course covers practical workflows for building, debugging, and iterating on real software projects using Claude as an intelligent coding assistant.'
+    },
+    {
+      title: "Claude with Google Cloud's Vertex AI",
+      issuer: 'ANTHROPIC · AUGUST 2026',
+      image: 'assets/claude-vertex-ai-cert.png',
+      verify: 'https://verify.skilljar.com/c/9mxtjjxx8wp5',
+      desc: "A certificate of completion from Anthropic for Claude with Google Cloud's Vertex AI, a 66-lesson course on building production applications against Claude models served through Google Cloud's Vertex AI. It covers API access and multi-turn conversation management, prompt engineering with systematic evaluation, tool use and batch processing, retrieval augmented generation including chunking, embeddings, hybrid search and reranking, the Model Context Protocol, and agent workflows built on parallelisation, chaining and routing."
     },
     {
       title: 'SAS Programming 1: Essentials',
@@ -149,6 +156,13 @@
       image: 'assets/sql-intermediate-cert.png',
       verify: 'https://www.hackerrank.com/certificates/iframe/a0a9acf47083',
       desc: 'A skill certification from HackerRank awarded for passing the SQL Intermediate assessment. The test evaluates practical knowledge of relational databases and query writing, covering complex joins, aggregations, subqueries, set operations, and working with multiple tables to extract and analyse structured data. Certificate ID: A0A9ACF47083.'
+    },
+    {
+      title: 'Problem Solving (Intermediate)',
+      issuer: 'HACKERRANK · AUGUST 2026',
+      image: 'assets/problem-solving-intermediate-cert.png',
+      verify: 'https://www.hackerrank.com/certificates/iframe/4f09ce79a291',
+      desc: 'A skill certification from HackerRank awarded for passing the Problem Solving Intermediate assessment. The test covers two competency areas: data structures, including hash maps, stacks, queues, heaps and linked lists, along with maintaining information such as subtrees and node distances; and algorithms, covering optimal solutions, run-time and space complexity analysis, and simple dynamic programming. Certificate ID: 4F09CE79A291.'
     }
   ];
 
