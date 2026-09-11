@@ -296,16 +296,16 @@
 
       <div class="project-card glass reveal">
         <div class="pc-head">
-          <span class="pc-code">04 &middot; TIME SERIES / DEEP LEARNING</span>
+          <span class="pc-code">04 &middot; CLINICAL RISK / GRAPH ML</span>
           <span class="pc-links">
-            <a class="pc-link pc-live" title="Hosted on Render&#39;s free tier &mdash; may take a moment to wake if idle" href="https://no2-forecasting-dashboard.onrender.com/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
-            <a class="pc-link" href="https://github.com/abinashprasana/no2-forecasting-deep-learning" target="_blank" rel="noopener">GITHUB &#8599;</a>
+            <a class="pc-link pc-live" href="https://heart-failure-representations.vercel.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link" href="https://github.com/abinashprasana/heart-failure-representations" target="_blank" rel="noopener">GITHUB &#8599;</a>
           </span>
         </div>
         <div class="pc-main">
-          <h3>NO&#8322; Forecasting, deep learning for air quality</h3>
-          <p>A benchmarking study comparing LSTM, GRU and temporal convolutional network models for hourly NO&#8322; forecasting on UK DEFRA sensor data from London's Marylebone Road, built from 8,760 raw hourly readings cleaned to 7,843 and windowed on a 24-hour lookback. The LSTM came out best at RMSE 6.09 &micro;g/m&sup3; against GRU's 7.59, with the TCN well behind at 13.56. The Flask dashboard serves saved results, so the hosted app never retrains.</p>
-          <div class="pc-tags"><span>Python</span><span>TensorFlow</span><span>LSTM</span><span>GRU</span><span>TCN</span><span>Flask</span></div>
+          <h3>Heart Failure Risk, three ways to describe a patient</h3>
+          <p>A controlled comparison of three patient representations for heart failure risk on MIMIC-IV: a flat feature vector, an admission sequence and a similarity graph, tested on a matched cohort of 9,371 and 11,496 patients. XGBoost on the plain aggregated vector reached 0.9545 AUROC and held its lead over GraphSAGE and a GRU, so the structurally cleverer representations never quite paid for themselves. A leakage bug in the original date-based windowing was caught and fixed before publishing, which moved every result down rather than leaving them quietly inflated.</p>
+          <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>GraphSAGE</span><span>GRU</span><span>SHAP</span><span>Next.js</span><span>TypeScript</span></div>
         </div>
       </div>
 
