@@ -125,7 +125,7 @@
         </div>
         <div class="hero-stats glass">
           <div class="stat"><span class="stat-num" data-count="7">0</span><span class="stat-l">Projects</span></div>
-          <div class="stat"><span class="stat-num" data-count="24">0</span><span class="stat-l">Skills</span></div>
+          <div class="stat"><span class="stat-num" data-count="31">0</span><span class="stat-l">Skills</span></div>
           <div class="stat"><span class="stat-num" data-count="8">0</span><span class="stat-l">Certs</span></div>
         </div>
       </div>
@@ -259,8 +259,8 @@
         </div>
         <div class="pc-main">
           <h3>Atlantic Ledger, governed churn intelligence</h3>
-          <p>An explainable churn model for retail banking on synthetic Irish data, set against the KBC Bank Ireland and Ulster Bank market exits. XGBoost with SMOTEENN balancing reaches 0.959 ROC-AUC and 0.842 average precision, with SHAP and DiCE making the fitted model inspectable. A retention agent proposes an action and runs it through a deterministic policy gate that returns a structured refusal when a rule blocks it, presented as a case study linked to a four-workspace interactive lab.</p>
-          <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>SMOTEENN</span><span>SHAP</span><span>DiCE</span><span>Groq</span><span>Next.js</span></div>
+          <p>A churn model for retail banking on synthetic Irish data, set against the KBC Bank Ireland and Ulster Bank market exits. XGBoost with SMOTEENN balancing reaches 0.824 ROC-AUC and 0.533 average precision, and SHAP and DiCE show why a customer is flagged. A retention agent suggests an action, then a fixed rule gate either approves it or refuses it and names the rule that failed. In an offline red-team test of 30 attacks, none caused an unsafe outcome with the gate on, and 25 did with it off. The write-up lists the harms the rules do not cover. It comes as a case study and a four-workspace interactive lab.</p>
+          <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>SMOTEENN</span><span>SHAP</span><span>DiCE</span><span>Groq</span><span>Gemini</span><span>Streamlit</span><span>Next.js</span></div>
         </div>
       </div>
 
@@ -274,7 +274,7 @@
         </div>
         <div class="pc-main">
           <h3>Clinical Evidence Assistant, grounded Q&amp;A on discharge notes</h3>
-          <p>An agentic RAG assistant answering clinical questions over de-identified MIMIC-IV discharge notes, accessed through CITI ethics training and a PhysioNet data use agreement. Section-aware chunking, FAISS retrieval and local Flan-T5 generation reach 70% accuracy at a mean latency of 3.4 seconds, with a LangGraph router and an on-device faithfulness check that refuses when the notes do not support an answer. The public demo runs the same pipeline over ten fabricated notes.</p>
+          <p>An assistant that answers clinical questions from de-identified MIMIC-IV discharge notes, accessed through CITI ethics training and a PhysioNet data use agreement. FAISS finds the right section, a local Flan-T5 model writes the answer, and a check against the source text runs before anything is shown. If the notes do not support an answer, it refuses. On a 40-question test set that tuning never touched, retrieval found the right section 91% of the time, answers were correct 69% of the time and 5 of 6 unanswerable questions were refused. The public demo runs the same idea over ten fabricated notes.</p>
           <div class="pc-tags"><span>Python</span><span>LangGraph</span><span>FAISS</span><span>Flan-T5</span><span>Flask</span><span>RAG</span></div>
         </div>
       </div>
@@ -289,8 +289,8 @@
         </div>
         <div class="pc-main">
           <h3>D&aacute;il LLM, an Irish parliamentary transformer</h3>
-          <p>A character-level transformer trained from scratch on D&aacute;il &Eacute;ireann parliamentary debate, with the full decoder-only architecture built in PyTorch on CPU and no pre-trained weights. Training runs on 9,080 speeches from a ten-week window in 1950, not the archive's full 1919 to 2013 range, and the 3.27-million-parameter model reaches perplexity 4.07, 58.67% next-character accuracy and a repetition score of 0.0000. A FastAPI backend serves a React interface for prompting the model and reading attention heatmaps across all four layers and eight heads.</p>
-          <div class="pc-tags"><span>Python</span><span>PyTorch</span><span>Transformers</span><span>FastAPI</span><span>React</span><span>NLP</span></div>
+          <p>A character-level transformer written in PyTorch with no pre-trained weights, trained on D&aacute;il &Eacute;ireann parliamentary debate. It uses 9,080 speeches from a ten-week window in 1950, not the archive's full 1919 to 2013 range. On held-out text the 3.27-million-parameter model reaches perplexity 4.07 and 58.67% next-character accuracy. The site has a Model Lab for prompting the model and viewing attention heatmaps across its four layers and eight heads, a small research pilot on 2008 to 2011 debates, and a source-first search of recent debates that stays switched off until its checks are done.</p>
+          <div class="pc-tags"><span>Python</span><span>PyTorch</span><span>Transformers</span><span>FastAPI</span><span>React</span><span>LangGraph</span><span>NLP</span></div>
         </div>
       </div>
 
@@ -304,23 +304,23 @@
         </div>
         <div class="pc-main">
           <h3>Heart Failure Risk, three ways to describe a patient</h3>
-          <p>A controlled comparison of three patient representations for heart failure risk on MIMIC-IV: a flat feature vector, an admission sequence and a similarity graph, tested on a matched cohort of 9,371 and 11,496 patients. XGBoost on the plain aggregated vector reached 0.9545 AUROC and held its lead over GraphSAGE and a GRU, so the structurally cleverer representations never quite paid for themselves. A leakage bug in the original date-based windowing was caught and fixed before publishing, which moved every result down rather than leaving them quietly inflated.</p>
+          <p>A fair comparison of three ways to describe a patient for heart failure risk on MIMIC-IV: one flat row of features, a sequence of admissions, and a patient similarity graph. Eight models were tested on matched groups of 9,371 and 11,496 patients. XGBoost on the flat row scored best at 0.9545 AUROC, and the sequence and graph models never beat it. A data leak in the first version, where rows from the diagnosis admission slipped into the patient history, was found and fixed before publishing. That pulled the scores down a little instead of leaving them inflated.</p>
           <div class="pc-tags"><span>Python</span><span>XGBoost</span><span>GraphSAGE</span><span>GRU</span><span>SHAP</span><span>Next.js</span><span>TypeScript</span></div>
         </div>
       </div>
 
       <div class="project-card glass reveal">
         <div class="pc-head">
-          <span class="pc-code">05 &middot; RECOMMENDERS / EXPLAINABLE AI</span>
+          <span class="pc-code">05 &middot; CIVIC DATA / GEOSPATIAL</span>
           <span class="pc-links">
-            <a class="pc-link pc-live" href="https://steam-recommender-xai-eta.vercel.app/" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
-            <a class="pc-link" href="https://github.com/abinashprasana/steam-recommender-xai" target="_blank" rel="noopener">GITHUB &#8599;</a>
+            <a class="pc-link pc-live" href="https://web-tau-flax-32.vercel.app/?site=DS1012" target="_blank" rel="noopener"><span class="live-dot"></span>LIVE DEMO &#8599;</a>
+            <a class="pc-link" href="https://github.com/abinashprasana" target="_blank" rel="noopener">GITHUB &#8599;</a>
           </span>
         </div>
         <div class="pc-main">
-          <h3>Waypoint, a Steam recommender with checked explanations</h3>
-          <p>Seven models run through one evaluation harness on 31,799 UCSD Steam interactions, ranked over the full catalogue rather than sampled negatives. A non-personalised popularity baseline takes the best NDCG@10 at 0.1501, and counterfactual explanations are verified by carrying them out, with 52% surviving the removal they claim. An earlier 0.5203 came from sampled negatives and an IDCG bug, which the write-up reports rather than quietly drops.</p>
-          <div class="pc-tags"><span>Python</span><span>PyTorch</span><span>BPR</span><span>EASE</span><span>Flask</span><span>TypeScript</span></div>
+          <h3>Second Life, what could a derelict Dublin site become?</h3>
+          <p>An atlas for Dublin City Council's register of 134 derelict sites, which lists an address and a few flags but nothing about the neighbourhood. For each site it adds Census 2022 figures for who lives nearby and OpenStreetMap counts of services within 800 m. It then scores four possible uses: childcare, study space, a repair workshop and a community hub. Every site also lists what is still unknown, such as ownership, condition and planning. The React atlas has a 3D city view and a flat map. An optional AI assistant runs on the user's own computer, only picks evidence, and Python writes every sentence from the data.</p>
+          <div class="pc-tags"><span>Python</span><span>React</span><span>TypeScript</span><span>Three.js</span><span>Leaflet</span><span>FastAPI</span><span>Ollama</span></div>
         </div>
       </div>
 
@@ -334,8 +334,8 @@
         </div>
         <div class="pc-main">
           <h3>The Settlement Gap, SQL reconciliation on payments</h3>
-          <p>A reconciliation investigation over a synthetic payments snapshot of 80,000 transactions across 5,000 customers and 800 merchants, where every join, exception flag and KPI is defined once in the SQL model chain and executed identically on DuckDB and PostgreSQL, with CI checking the two agree on every push. A walkthrough traces one fee-mismatch case and hands the payment straight to a four-view operations workbench.</p>
-          <div class="pc-tags"><span>PostgreSQL</span><span>DuckDB</span><span>SQL</span><span>Streamlit</span><span>Next.js</span></div>
+          <p>A SQL investigation into payments that look complete but fail the daily close. The data is synthetic: 600,000 transactions across 30,000 customers and 2,500 merchants. Every join, exception flag and KPI is written once in SQL and runs the same on DuckDB and PostgreSQL, and CI checks that both agree on every push. A walkthrough follows one fee-mismatch case into a four-view operations workbench. A read-only MCP server lets Claude ask questions through a fixed set of checked queries. In a small test, a model writing its own SQL got 1 of 31 answers right.</p>
+          <div class="pc-tags"><span>PostgreSQL</span><span>DuckDB</span><span>SQL</span><span>Streamlit</span><span>Next.js</span><span>MCP</span></div>
         </div>
       </div>
 
@@ -349,7 +349,7 @@
         </div>
         <div class="pc-main">
           <h3>KAIROS, incident SLA breach risk scored early</h3>
-          <p>Ranks a live IT incident queue by SLA breach risk from partial information, scoring every prefix of a case rather than one row per finished ticket. Across 23,102 UCI ServiceNow incidents held out over time, fixed-cohort AUC runs from 0.619 at the first event to 0.887 by the eighth. The write-up reports what an honest protocol costs: the original 0.9674 came from whole-trace features and a random split.</p>
+          <p>Ranks a live IT incident queue by the risk of missing its SLA, using only what is known so far. Each incident is scored after its first event, its second, and so on. On 23,102 UCI ServiceNow incidents held out by time, AUC rises from 0.619 after one event to 0.887 after eight. The first version scored 0.9674, but it used details only known once a ticket closed, plus a random split. The write-up shows what the honest setup costs.</p>
           <div class="pc-tags"><span>Python</span><span>scikit-learn</span><span>XGBoost</span><span>Conformal</span><span>Next.js</span></div>
         </div>
       </div>
@@ -373,15 +373,15 @@
       </div>
       <div class="skill-card glass reveal">
         <div class="sc-head"><span class="sc-code">02</span><span class="sc-name">ML &amp; AI</span></div>
-        <div class="skill-chips"><span>Machine Learning</span><span>Deep Learning</span><span>NLP</span><span>RAG</span><span>LLM Agents</span><span>PyTorch</span><span>TensorFlow</span><span>Scikit-learn</span><span>Hugging Face</span><span>Explainable AI</span></div>
+        <div class="skill-chips"><span>Machine Learning</span><span>Deep Learning</span><span>NLP</span><span>RAG</span><span>LLM Agents</span><span>LangGraph</span><span>PyTorch</span><span>TensorFlow</span><span>Scikit-learn</span><span>XGBoost</span><span>Hugging Face</span><span>Explainable AI</span></div>
       </div>
       <div class="skill-card glass reveal">
         <div class="sc-head"><span class="sc-code">03</span><span class="sc-name">Data &amp; Analytics</span></div>
-        <div class="skill-chips"><span>Data Science</span><span>Pandas</span><span>NumPy</span><span>PostgreSQL</span><span>EDA</span><span>Time Series</span><span>Plotly</span><span>Data Visualisation</span></div>
+        <div class="skill-chips"><span>Data Science</span><span>Pandas</span><span>NumPy</span><span>PostgreSQL</span><span>DuckDB</span><span>EDA</span><span>Time Series</span><span>Plotly</span><span>Data Visualisation</span></div>
       </div>
       <div class="skill-card glass reveal">
         <div class="sc-head"><span class="sc-code">04</span><span class="sc-name">Tools &amp; Workflow</span></div>
-        <div class="skill-chips"><span>Jupyter</span><span>Flask</span><span>Git &amp; GitHub</span><span>RESTful APIs</span></div>
+        <div class="skill-chips"><span>Jupyter</span><span>Flask</span><span>FastAPI</span><span>React</span><span>Next.js</span><span>TypeScript</span><span>Git &amp; GitHub</span><span>RESTful APIs</span></div>
       </div>
     </div>
   </section>
