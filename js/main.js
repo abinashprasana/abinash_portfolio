@@ -163,6 +163,13 @@
       image: 'assets/problem-solving-intermediate-cert.png',
       verify: 'https://www.hackerrank.com/certificates/iframe/4f09ce79a291',
       desc: 'A skill certification from HackerRank awarded for passing the Problem Solving Intermediate assessment. The test covers two competency areas: data structures, including hash maps, stacks, queues, heaps and linked lists, along with maintaining information such as subtrees and node distances; and algorithms, covering optimal solutions, run-time and space complexity analysis, and simple dynamic programming. Certificate ID: 4F09CE79A291.'
+    },
+    {
+      title: 'Oracle Cloud Infrastructure Foundations Associate',
+      issuer: 'ORACLE UNIVERSITY · OCTOBER 2026',
+      image: 'assets/oracle-oci-foundations-cert.png',
+      verify: 'https://catalog-education.oracle.com/pls/certview/sharebadge?id=A5053E91F0B0463DC0FC67474B0FD425327F999DA2FE176CA8EA0385651B24A8',
+      desc: 'An Oracle Certified credential from Oracle University, earned by passing the Oracle Cloud Infrastructure Foundations Associate exam. It tests the basics of cloud computing and the core OCI services: compute, storage and networking, identity and access management, security, and pricing and support. The certificate was issued on 22 October 2026 and is valid until 22 October 2028.'
     }
   ];
 
